@@ -1,6 +1,6 @@
 /*!*****************************************************************
  * \file    s2lp_rf_api.c
- * \brief   Sigfox s2lp RF api.
+ * \brief   Sigfox S2LP RF API implementation.
  *******************************************************************
  * \copyright
  *
@@ -82,7 +82,7 @@
 #define S2LP_FIFO_SIZE_BYTES						128
 
 #ifdef VERBOSE
-static const sfx_u8 S2LP_RF_API_VERSION[] = 		"v1.0";
+static const sfx_u8 S2LP_RF_API_VERSION[] = 		"v1.1";
 #endif
 
 // Ramp profile table is written for ramp-down direction (reverse table for ramp up).
@@ -224,6 +224,33 @@ static void _wait_for_s2lp_state_switch(S2LPState new_state) {
 	while (g_xStatus.MC_STATE != new_state) {
 		S2LPRefreshStatus();
 	}
+}
+
+/*******************************************************************/
+static RF_API_status_t _convert_gpio(S2LP_HW_API_gpio_t hw_api_gpio, S2LPGpioPin* s2lp_gpio) {
+#ifdef ERROR_CODES
+	// Local variables.
+	RF_API_status_t status = S2LP_RF_API_SUCCESS;
+#endif
+	switch (hw_api_gpio) {
+	case S2LP_HW_API_GPIO_0:
+		(*s2lp_gpio) = S2LP_GPIO_0;
+		break;
+	case S2LP_HW_API_GPIO_1:
+		(*s2lp_gpio) = S2LP_GPIO_1;
+		break;
+	case S2LP_HW_API_GPIO_2:
+		(*s2lp_gpio) = S2LP_GPIO_2;
+		break;
+	case S2LP_HW_API_GPIO_3:
+		(*s2lp_gpio) = S2LP_GPIO_3;
+		break;
+	default:
+		EXIT_ERROR(S2LP_RF_API_ERROR_GPIO);
+		break;
+	}
+errors:
+	RETURN();
 }
 
 /*******************************************************************/
@@ -517,7 +544,7 @@ RF_API_status_t S2LP_RF_API_init(RF_API_radio_parameters_t *radio_parameters) {
 	ModulationSelect s2lp_modulation = MOD_NO_MOD;
 	sfx_u32 s2lp_datarate = 0;
 	sfx_u32 s2lp_deviation = 0;
-	S2LP_HW_API_gpio_t s2lp_gpio = 0;
+	S2LP_HW_API_gpio_t hw_api_gpio = 0;
 	SGpioInit s2lp_gpio_init;
 	sfx_u8 reg_value = 0;
 #ifdef BIDIRECTIONAL
@@ -570,14 +597,16 @@ RF_API_status_t S2LP_RF_API_init(RF_API_radio_parameters_t *radio_parameters) {
 	S2LPRadioSetFrequencyDev(s2lp_deviation);
 	// Disable all IRQ.
 	S2LPGpioIrqDeInit(NULL);
-	// Configure GPIO.
+	// Configure IRQ GPIO.
 #ifdef ERROR_CODES
-	s2lp_hw_api_status = S2LP_HW_API_get_gpio(&s2lp_gpio);
+	s2lp_hw_api_status = S2LP_HW_API_get_gpio(S2LP_HW_API_SIGNAL_IRQ, &hw_api_gpio);
 	S2LP_HW_API_check_status(S2LP_RF_API_ERROR_DRIVER_S2LP_HW_API);
+	status = _convert_gpio(hw_api_gpio, &(s2lp_gpio_init.xS2LPGpioPin));
+	CHECK_STATUS(RF_API_SUCCESS);
 #else
-	S2LP_HW_API_get_gpio(&s2lp_gpio);
+	S2LP_HW_API_get_gpio(S2LP_HW_API_SIGNAL_IRQ, &hw_api_gpio);
+	_convert_gpio(hw_api_gpio, &(s2lp_gpio_init.xS2LPGpioPin));
 #endif
-	s2lp_gpio_init.xS2LPGpioPin = (S2LPGpioPin) s2lp_gpio; // Note: value mapping is the same.
 	s2lp_gpio_init.xS2LPGpioMode = S2LP_GPIO_MODE_DIGITAL_OUTPUT_LP;
 	s2lp_gpio_init.xS2LPGpioIO = S2LP_GPIO_DIG_OUT_IRQ;
 	S2LPGpioInit(&s2lp_gpio_init);
@@ -931,3 +960,97 @@ void S2LP_RF_API_error(void) {
 #endif
 }
 #endif
+
+/*** S2LP RF API functions mapping ***/
+
+#ifndef DYNAMIC_RF_API
+
+#if (defined ASYNCHRONOUS) || (defined LOW_LEVEL_OPEN_CLOSE)
+/*******************************************************************/
+inline RF_API_status_t RF_API_open(RF_API_config_t *rf_api_config) {
+	return S2LP_RF_API_open(rf_api_config);
+}
+#endif
+
+#ifdef LOW_LEVEL_OPEN_CLOSE
+/*******************************************************************/
+inline RF_API_status_t RF_API_close(void) {
+	return S2LP_RF_API_close();
+}
+#endif
+
+#ifdef ASYNCHRONOUS
+/*******************************************************************/
+inline RF_API_status_t RF_API_process(void) {
+	return S2LP_RF_API_process();
+}
+#endif
+
+/*******************************************************************/
+inline RF_API_status_t RF_API_wake_up(void) {
+	return S2LP_RF_API_wake_up();
+}
+
+/*******************************************************************/
+inline RF_API_status_t RF_API_sleep(void) {
+	return S2LP_RF_API_sleep();
+}
+
+/*******************************************************************/
+inline RF_API_status_t RF_API_init(RF_API_radio_parameters_t *radio_parameters) {
+	return S2LP_RF_API_init(radio_parameters);
+}
+
+/*******************************************************************/
+inline RF_API_status_t RF_API_de_init(void) {
+	return S2LP_RF_API_de_init();
+}
+
+/*******************************************************************/
+inline RF_API_status_t RF_API_send(RF_API_tx_data_t *tx_data) {
+	return S2LP_RF_API_send(tx_data);
+}
+
+#ifdef BIDIRECTIONAL
+/*******************************************************************/
+inline RF_API_status_t RF_API_receive(RF_API_rx_data_t *rx_data) {
+	return S2LP_RF_API_receive(rx_data);
+}
+#endif
+
+#ifdef BIDIRECTIONAL
+/*******************************************************************/
+inline RF_API_status_t RF_API_get_dl_phy_content_and_rssi(sfx_u8 *dl_phy_content, sfx_u8 dl_phy_content_size, sfx_s16 *dl_rssi_dbm) {
+	return S2LP_RF_API_get_dl_phy_content_and_rssi(dl_phy_content, dl_phy_content_size, dl_rssi_dbm);
+}
+#endif
+
+#if (defined REGULATORY) && (defined SPECTRUM_ACCESS_LBT)
+/*******************************************************************/
+inline RF_API_status_t RF_API_carrier_sense(RF_API_carrier_sense_parameters_t *carrier_sense_params) {
+	return S2LP_RF_API_carrier_sense(carrier_sense_params);
+}
+#endif
+
+#if (defined TIMER_REQUIRED) && (defined LATENCY_COMPENSATION)
+/*******************************************************************/
+inline RF_API_status_t RF_API_get_latency(RF_API_latency_t latency_type, sfx_u32 *latency_ms) {
+	return S2LP_RF_API_get_latency(latency_type, latency_ms);
+}
+#endif
+
+#ifdef VERBOSE
+/*******************************************************************/
+inline RF_API_status_t RF_API_get_version(sfx_u8 **version, sfx_u8 *version_size_char) {
+	return S2LP_RF_API_get_version(version, version_size_char);
+}
+#endif
+
+#ifdef ERROR_CODES
+/*******************************************************************/
+inline void RF_API_error(void) {
+	S2LP_RF_API_error();
+}
+#endif
+
+#endif /* DYNAMIC_RF_API */

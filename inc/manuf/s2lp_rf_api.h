@@ -1,6 +1,6 @@
 /*!*****************************************************************
  * \file    s2lp_rf_api.h
- * \brief   Sigfox s2lp RF api.
+ * \brief   Sigfox S2LP RF API implementation.
  *******************************************************************
  * \copyright
  *
@@ -56,6 +56,7 @@ typedef enum {
 	S2LP_RF_API_ERROR_MODE,
 	S2LP_RF_API_ERROR_FREQUENCY,
 	S2LP_RF_API_ERROR_MODULATION,
+	S2LP_RF_API_ERROR_GPIO,
 	S2LP_RF_API_ERROR_TX_POWER,
 	S2LP_RF_API_ERROR_SYMBOL_TABLE,
 	S2LP_RF_API_ERROR_LATENCY_TYPE,
@@ -223,43 +224,6 @@ RF_API_status_t S2LP_RF_API_get_version(sfx_u8 **version, sfx_u8 *version_size_c
  *******************************************************************/
 void S2LP_RF_API_error(void);
 #endif
-
-/*** S2LP RF API functions mapping ***/
-
-#ifndef DYNAMIC_RF_API
-
-#if (defined ASYNCHRONOUS) || (defined LOW_LEVEL_OPEN_CLOSE)
-#define RF_API_open                         S2LP_RF_API_open
-#endif
-#ifdef LOW_LEVEL_OPEN_CLOSE
-#define RF_API_close                        S2LP_RF_API_close
-#endif
-#ifdef ASYNCHRONOUS
-#define RF_API_process                      S2LP_RF_API_process
-#endif
-#define RF_API_wake_up                      S2LP_RF_API_wake_up
-#define RF_API_sleep                        S2LP_RF_API_sleep
-#define RF_API_init                         S2LP_RF_API_init
-#define RF_API_de_init                      S2LP_RF_API_de_init
-#define RF_API_send                         S2LP_RF_API_send
-#ifdef BIDIRECTIONAL
-#define RF_API_receive                      S2LP_RF_API_receive
-#define RF_API_get_dl_phy_content_and_rssi	S2LP_RF_API_get_dl_phy_content_and_rssi
-#endif
-#if (defined REGULATORY) && (defined SPECTRUM_ACCESS_LBT)
-#define RF_API_carrier_sense                S2LP_RF_API_carrier_sense
-#endif
-#if (defined TIMER_REQUIRED) && (defined LATENCY_COMPENSATION)
-#define RF_API_get_latency					S2LP_RF_API_get_latency
-#endif
-#ifdef VERBOSE
-#define RF_API_get_version					S2LP_RF_API_get_version
-#endif
-#ifdef ERROR_CODES
-#define RF_API_error						S2LP_RF_API_error
-#endif
-
-#endif /* DYNAMIC_RF_API */
 
 /*** Unwanted flag combinations and values ***/
 

@@ -72,6 +72,15 @@ typedef enum {
 } S2LP_HW_API_oscillator_type_t;
 
 /*!******************************************************************
+ * \enum S2LP_HW_API_signal_t
+ * \brief S2LP external signals list.
+ *******************************************************************/
+typedef enum {
+	S2LP_HW_API_SIGNAL_IRQ = 0,
+	S2LP_HW_API_SIGNAL_LAST
+} S2LP_HW_API_signal_t;
+
+/*!******************************************************************
  * \enum S2LP_HW_API_gpio_t
  * \brief S2LP GPIO pins list.
  *******************************************************************/
@@ -134,11 +143,11 @@ S2LP_HW_API_status_t S2LP_HW_API_get_oscillator(S2LP_HW_API_oscillator_type_t *x
 /*!******************************************************************
  * \fn S2LP_HW_API_status_t S2LP_HW_API_get_gpio(sfx_u8 *s2lp_gpio)
  * \brief Returns the S2LP GPIO attached to the MCU.
- * \param[in]  	none
- * \param[out] 	s2lp_gpio_pin: Pointer to the S2LP GPIO pin number used as external interrupt.
+ * \param[in]  	signal: External S2LP signal.
+ * \param[out] 	s2lp_gpio: Pointer to the S2LP GPIO pin number connected to the signal.
  * \retval		Function execution status.
  *******************************************************************/
-S2LP_HW_API_status_t S2LP_HW_API_get_gpio(S2LP_HW_API_gpio_t *s2lp_gpio);
+S2LP_HW_API_status_t S2LP_HW_API_get_gpio(S2LP_HW_API_signal_t signal, S2LP_HW_API_gpio_t *s2lp_gpio);
 
 #if (defined TIMER_REQUIRED) && (defined LATENCY_COMPENSATION)
 /*!******************************************************************
