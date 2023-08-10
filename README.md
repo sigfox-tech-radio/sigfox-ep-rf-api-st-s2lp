@@ -8,6 +8,7 @@ The table below shows the version compatibility with the SIGFOX_EP_LIB version.
 
 |                                      **S2LP_RF_API**                                    |                                **SIGFOX_EP_LIB**                                |
 |:---------------------------------------------------------------------------------------:|:-------------------------------------------------------------------------------:|
+| [v1.2](https://github.com/sigfox-tech-radio/sigfox-ep-rf-api-st-s2lp/releases/tag/v1.2) | >= [v3.2](https://github.com/sigfox-tech-radio/sigfox-ep-lib/releases/tag/v3.2) |
 | [v1.1](https://github.com/sigfox-tech-radio/sigfox-ep-rf-api-st-s2lp/releases/tag/v1.1) | >= [v3.2](https://github.com/sigfox-tech-radio/sigfox-ep-lib/releases/tag/v3.2) |
 | [v1.0](https://github.com/sigfox-tech-radio/sigfox-ep-rf-api-st-s2lp/releases/tag/v1.0) | >= [v3.2](https://github.com/sigfox-tech-radio/sigfox-ep-lib/releases/tag/v3.2) |
 

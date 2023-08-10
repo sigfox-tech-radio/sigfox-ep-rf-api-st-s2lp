@@ -50,8 +50,7 @@
  * \brief S2LP RF driver error codes.
  *******************************************************************/
 typedef enum {
-	S2LP_RF_API_SUCCESS = RF_API_SUCCESS,
-	S2LP_RF_API_ERROR_NULL_PARAMETER,
+	S2LP_RF_API_ERROR_NULL_PARAMETER = RF_API_ERROR_LAST,
 	S2LP_RF_API_ERROR_BUFFER_SIZE,
 	S2LP_RF_API_ERROR_MODE,
 	S2LP_RF_API_ERROR_FREQUENCY,

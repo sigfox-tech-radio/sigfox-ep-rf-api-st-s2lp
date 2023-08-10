@@ -7,6 +7,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v1.2](https://github.com/sigfox-tech-radio/sigfox-ep-rf-api-st-s2lp/releases/tag/v1.2) - 10 Aug 2023
+
+### Changed
+
+* Improve **spectrum template** with new amplitude profile tables.
+* Improve **radio configuration** steps.
+* Simplify **FIFO threshold** management and **uplink latency** computation.
+* Improve **error codes** definition.
+* Rename **internal process** function.
+* Use **Sigfox types** in driver.
+
+### Fixed
+
+* Fix **downlink reception issue** in blocking mode (flag set missing).
+
+### Known limitations
+
+* **LBT** not implemented.
+* **External radio front-end** not supported.
+
 ## [v1.1](https://github.com/sigfox-tech-radio/sigfox-ep-rf-api-st-s2lp/releases/tag/v1.1) - 28 Jun 2023
 
 ### Added

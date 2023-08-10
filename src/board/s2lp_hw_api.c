@@ -40,7 +40,6 @@
 #include "sigfox_ep_flags.h"
 #endif
 // Sigfox EP library.
-#include "manuf/rf_api.h"
 #include "sigfox_error.h"
 #include "sigfox_types.h"
 

@@ -60,9 +60,6 @@
 
 /*** S2LP RF API local macros ***/
 
-#define S2LP_RF_API_RAMP_PROFILE_SIZE_BYTES			40
-#define S2LP_RF_API_RAMP_FIFO_BUFFER_SIZE_BYTES		(2 * S2LP_RF_API_RAMP_PROFILE_SIZE_BYTES) // Size is twice to store PA and FDEV values.
-
 #define S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES		40
 #define S2LP_RF_API_SYMBOL_FIFO_BUFFER_SIZE_BYTES	(2 * S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES) // Size is twice to store PA and FDEV values.
 
@@ -73,43 +70,46 @@
 
 #define S2LP_RF_API_FIFO_BUFFER_FDEV_IDX			(S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES / 2) // Index where deviation is performed to invert phase.
 
+#define S2LP_RF_API_FIFO_TX_ALMOST_EMPTY_THRESHOLD	(S2LP_RF_API_SYMBOL_FIFO_BUFFER_SIZE_BYTES / 2) // Threshold set to the middle of a symbol.
+
 #ifdef BIDIRECTIONAL
 #define S2LP_RF_API_DL_PR_SIZE_BITS					36
 #define S2LP_RF_API_RX_BANDWIDTH_HZ					3000
 #define S2LP_RF_API_DOWNLINK_RSSI_THRESHOLD_DBM		-139
 #endif
 
-#define S2LP_FIFO_SIZE_BYTES						128
-
 #ifdef VERBOSE
-static const sfx_u8 S2LP_RF_API_VERSION[] = 		"v1.1";
+static const sfx_u8 S2LP_RF_API_VERSION[] = 		"v1.2";
 #endif
 
 // Ramp profile table is written for ramp-down direction (reverse table for ramp up).
 // Ampltude profile table contains whole bit 0 transmission.
 #if !(defined TX_POWER_DBM_EIRP) || (TX_POWER_DBM_EIRP == 0)
-static const sfx_u8 RF_API_RAMP_AMPLITUDE_PROFILE_00_DBM[S2LP_RF_API_RAMP_PROFILE_SIZE_BYTES] = {29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 29, 30, 30, 30, 30, 30, 30, 30, 30, 31, 31, 31, 31, 32, 32, 32, 33, 33, 34, 35, 36, 38, 40, 42, 47, 56, 80, 120, 220};
-static const sfx_u8 RF_API_BIT0_AMPLITUDE_PROFILE_00_DBM[S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES] = {29, 29, 29, 29, 29, 29, 30, 30, 30, 31, 31, 32, 33, 34, 35, 36, 38, 42, 54, 220, 220, 54, 42, 38, 36, 35, 33, 32, 31, 31, 30, 30, 30, 29, 29, 29, 29, 29, 29, 29};
+static const sfx_u8 S2LP_RF_API_RAMP_AMPLITUDE_PROFILE_00_DBM[S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES] = {23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 24, 24, 25, 26, 27, 28, 29, 31, 33, 35, 38, 42, 60, 220};
+static const sfx_u8 S2LP_RF_API_BIT0_AMPLITUDE_PROFILE_00_DBM[S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES] = {23, 23, 23, 23, 23, 23, 24, 24, 25, 26, 27, 28, 29, 31, 33, 35, 38, 42, 60, 220, 220, 60, 42, 38, 35, 33, 31, 29, 28, 27, 26, 25, 24, 24, 23, 23, 23, 23, 23, 23};
 #endif
 #if !(defined TX_POWER_DBM_EIRP) || (TX_POWER_DBM_EIRP == 3)
-static const sfx_u8 RF_API_RAMP_AMPLITUDE_PROFILE_03_DBM[S2LP_RF_API_RAMP_PROFILE_SIZE_BYTES] = {23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 23, 24, 24, 24, 24, 24, 24, 24, 25, 25, 25, 26, 26, 27, 28, 29, 30, 31, 32, 33, 35, 37, 39, 42, 47, 56, 80, 120, 220};
-static const sfx_u8 RF_API_BIT0_AMPLITUDE_PROFILE_03_DBM[S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES] = {23, 23, 23, 23, 23, 23, 24, 24, 25, 26, 27, 28, 29, 31, 33, 35, 38, 42, 54, 220, 220, 54, 42, 38, 35, 33, 31, 29, 28, 27, 26, 25, 24, 24, 23, 23, 23, 23, 23, 23};
+static const sfx_u8 S2LP_RF_API_RAMP_AMPLITUDE_PROFILE_03_DBM[S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES] = {17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 17, 18, 18, 18, 19, 19, 20, 21, 22, 25, 28, 31, 35, 39, 60, 220};
+static const sfx_u8 S2LP_RF_API_BIT0_AMPLITUDE_PROFILE_03_DBM[S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES] = {17, 17, 17, 17, 17, 18, 18, 18, 19, 19, 20, 21, 22, 25, 28, 31, 35, 39, 60, 220, 220, 60, 39, 35, 31, 28, 25, 22, 21, 20, 19, 19, 18, 18, 18, 17, 17, 17, 17, 17};
 #endif
 #if !(defined TX_POWER_DBM_EIRP) || (TX_POWER_DBM_EIRP == 5)
-static const sfx_u8 RF_API_RAMP_AMPLITUDE_PROFILE_05_DBM[S2LP_RF_API_RAMP_PROFILE_SIZE_BYTES] = {19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 19, 20, 20, 20, 20, 20, 21, 21, 21, 22, 22, 23, 23, 24, 25, 26, 27, 28, 29, 31, 33, 35, 38, 42, 47, 56, 80, 120, 220};
-static const sfx_u8 RF_API_BIT0_AMPLITUDE_PROFILE_05_DBM[S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES] = {19, 19, 19, 19, 19, 19, 20, 20, 21, 22, 23, 24, 26, 28, 30, 33, 36, 42, 54, 220, 220, 54, 42, 36, 33, 30, 28, 26, 24, 23, 22, 21, 20, 20, 19, 19, 19, 19, 19, 19};
+static const sfx_u8 S2LP_RF_API_RAMP_AMPLITUDE_PROFILE_05_DBM[S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES] = {13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 13, 14, 14, 15, 15, 16, 17, 19, 21, 24, 27, 30, 34, 39, 60, 220};
+static const sfx_u8 S2LP_RF_API_BIT0_AMPLITUDE_PROFILE_05_DBM[S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES] = {13, 13, 13, 13, 13, 14, 14, 15, 15, 16, 17, 19, 21, 24, 27, 30, 34, 39, 60, 220, 220, 60, 39, 34, 30, 27, 24, 21, 19, 17, 16, 15, 15, 14, 14, 13, 13, 13, 13, 13};
 #endif
 #if !(defined TX_POWER_DBM_EIRP) || (TX_POWER_DBM_EIRP == 7)
-static const sfx_u8 RF_API_RAMP_AMPLITUDE_PROFILE_07_DBM[S2LP_RF_API_RAMP_PROFILE_SIZE_BYTES] = {15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 18, 18, 19, 20, 21, 22, 23, 24, 25, 26, 28, 30, 32, 35, 38, 42, 47, 56, 80, 120, 220};
-static const sfx_u8 RF_API_BIT0_AMPLITUDE_PROFILE_07_DBM[S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES] = {15, 15, 15, 15, 15, 15, 16, 16, 17, 18, 20, 22, 24, 26, 28, 32, 36, 42, 54, 220, 220, 54, 42, 36, 32, 28, 26, 24, 22, 20, 18, 17, 16, 16, 15, 15, 15, 15, 15, 15};
+static const sfx_u8 S2LP_RF_API_RAMP_AMPLITUDE_PROFILE_07_DBM[S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES] = {9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 10, 10, 11, 12, 13, 15, 18, 21, 25, 29, 34, 39, 60, 220};
+static const sfx_u8 S2LP_RF_API_BIT0_AMPLITUDE_PROFILE_07_DBM[S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES] = {9, 9, 9, 9, 9, 9, 10, 10, 11, 12, 13, 15, 18, 21, 25, 29, 34, 39, 60, 220, 220, 60, 39, 34, 29, 25, 21, 18, 15, 13, 12, 11, 10, 10, 9, 9, 9, 9, 9, 9};
 #endif
 #if !(defined TX_POWER_DBM_EIRP) || (TX_POWER_DBM_EIRP == 10)
-static const sfx_u8 RF_API_RAMP_AMPLITUDE_PROFILE_10_DBM[S2LP_RF_API_RAMP_PROFILE_SIZE_BYTES] = {9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 9, 10, 10, 10, 10, 11, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 23, 25, 27, 29, 32, 35, 38, 42, 47, 56, 80, 120, 220};
-static const sfx_u8 RF_API_BIT0_AMPLITUDE_PROFILE_10_DBM[S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES] = {9, 9, 9, 9, 9, 9, 10, 10, 11, 12, 14, 16, 18, 21, 24, 28, 32, 39, 54, 220, 220, 54, 39, 32, 28, 24, 21, 18, 16, 14, 12, 11, 10, 10, 9, 9, 9, 9, 9, 9};
+static const sfx_u8 S2LP_RF_API_RAMP_AMPLITUDE_PROFILE_10_DBM[S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES] = {4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 4, 5, 5, 5, 6, 6, 7, 8, 9, 11, 13, 16, 20, 25, 31, 39, 60, 220};
+static const sfx_u8 S2LP_RF_API_BIT0_AMPLITUDE_PROFILE_10_DBM[S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES] = {4, 4, 4, 5, 5, 5, 6, 6, 7, 8, 9, 11, 13, 16, 20, 25, 31, 39, 60, 220, 220, 60, 39, 31, 25, 20, 16, 13, 11, 9, 8, 7, 6, 6, 5, 5, 5, 4, 4, 4};
 #endif
 #if !(defined TX_POWER_DBM_EIRP) || (TX_POWER_DBM_EIRP == 14)
-static const sfx_u8 RF_API_RAMP_AMPLITUDE_PROFILE_14_DBM[S2LP_RF_API_RAMP_PROFILE_SIZE_BYTES] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2, 3, 3, 4, 5, 6, 7, 8, 9, 11, 13, 15, 17, 20, 22, 24, 27, 30, 34, 39, 45, 54, 80, 120, 220};
-static const sfx_u8 RF_API_BIT0_AMPLITUDE_PROFILE_14_DBM[S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES] = {1, 1, 1, 1, 1, 1, 2, 2, 3, 4, 6, 8, 11, 15, 20, 24, 30, 39, 54, 220, 220, 54, 39, 30, 24, 20, 15, 11, 8, 6, 4, 3, 2, 2, 1, 1, 1, 1, 1, 1};
+static const sfx_u8 S2LP_RF_API_RAMP_AMPLITUDE_PROFILE_14_DBM[S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 5, 7, 10, 14, 19, 25, 31, 39, 60, 220};
+static const sfx_u8 S2LP_RF_API_BIT0_AMPLITUDE_PROFILE_14_DBM[S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES] = {1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 5, 7, 10, 14, 19, 25, 31, 39, 60, 220, 220, 60, 39, 31, 25, 19, 14, 10, 7, 5, 3, 3, 2, 2, 2, 1, 1, 1, 1, 1};
+#endif
+#ifdef BIDIRECTIONAL
+static const sfx_u8 S2LP_RF_API_SIGFOX_DL_FT[SIGFOX_DL_FT_SIZE_BYTES] = SIGFOX_DL_FT;
 #endif
 
 /*** S2LP RF API local structures ***/
@@ -145,7 +145,7 @@ typedef struct {
 	S2LP_RF_API_state_t state;
 	volatile S2LP_RF_API_flags_t flags;
 	sfx_u8 symbol_fifo_buffer[S2LP_RF_API_SYMBOL_FIFO_BUFFER_SIZE_BYTES];
-	sfx_u8 ramp_fifo_buffer[S2LP_RF_API_RAMP_FIFO_BUFFER_SIZE_BYTES];
+	sfx_u8 ramp_fifo_buffer[S2LP_RF_API_SYMBOL_FIFO_BUFFER_SIZE_BYTES];
 	// TX.
 	sfx_u8 tx_bitstream[SIGFOX_UL_BITSTREAM_SIZE_BYTES];
 	sfx_u8 tx_bitstream_size_bytes;
@@ -160,7 +160,7 @@ typedef struct {
 #ifdef BIDIRECTIONAL
 	// RX.
 	sfx_u8 dl_phy_content[SIGFOX_DL_PHY_CONTENT_SIZE_BYTES];
-	int16_t dl_rssi_dbm;
+	sfx_s16 dl_rssi_dbm;
 	sfx_u32 sync_word_u32;
 #ifdef ASYNCHRONOUS
 	RF_API_rx_data_received_cb_t rx_data_received_cb;
@@ -171,18 +171,18 @@ typedef struct {
 /*** S2LP RF API local global variables ***/
 
 #if (defined TIMER_REQUIRED) && (defined LATENCY_COMPENSATION)
-// Latency values.
+// Latency values (for core clock at 32MHz and SPI interface at 8MHz).
 static sfx_u32 S2LP_RF_API_LATENCY_MS[RF_API_LATENCY_LAST] = {
 	0, // Wake-up (depends on HW latency).
 	1, // TX init (600µs).
 	0, // Send start (depends on bit rate and will be computed during init function).
-	0, // Send end (depends on bit rate and will be computed during init function).
+	0, // Send stop (depends on bit rate and will be computed during init function).
 	0, // TX de init (30µs).
 	0, // Sleep (depends on HW latency).
 #ifdef BIDIRECTIONAL
 	1, // RX init (1.1ms).
 	0, // Receive start (150µs).
-	7, // Receive end (6.7ms).
+	7, // Receive stop (6.7ms).
 	0, // RX de init (30µs).
 #endif
 };
@@ -196,7 +196,6 @@ static void _reset_context(void) {
 #ifdef BIDIRECTIONAL
 	// Local variables.
 	sfx_u8 idx = 0;
-	const sfx_u8 S2LP_RF_API_SIGFOX_DL_FT[SIGFOX_DL_FT_SIZE_BYTES] = SIGFOX_DL_FT;
 #endif
 	// Init context.
 	s2lp_rf_api_ctx.state = S2LP_RF_API_STATE_READY;
@@ -211,8 +210,7 @@ static void _reset_context(void) {
 #ifdef BIDIRECTIONAL
 	// Build synchronization word in integer format (0xB2270000).
 	s2lp_rf_api_ctx.sync_word_u32 = 0;
-	for (idx=0 ; idx<4 ; idx++) {
-		if (idx >= SIGFOX_DL_FT_SIZE_BYTES) break;
+	for (idx=0 ; idx<SIGFOX_DL_FT_SIZE_BYTES ; idx++) {
 		s2lp_rf_api_ctx.sync_word_u32 |= S2LP_RF_API_SIGFOX_DL_FT[idx] << (8 * (3 - idx));
 	}
 #endif
@@ -230,7 +228,7 @@ static void _wait_for_s2lp_state_switch(S2LPState new_state) {
 static RF_API_status_t _convert_gpio(S2LP_HW_API_gpio_t hw_api_gpio, S2LPGpioPin* s2lp_gpio) {
 #ifdef ERROR_CODES
 	// Local variables.
-	RF_API_status_t status = S2LP_RF_API_SUCCESS;
+	RF_API_status_t status = RF_API_SUCCESS;
 #endif
 	switch (hw_api_gpio) {
 	case S2LP_HW_API_GPIO_0:
@@ -266,11 +264,11 @@ static void _s2lp_gpio_irq_callback(void) {
 }
 
 /*******************************************************************/
-static RF_API_status_t _internal_process(void) {
+static RF_API_status_t _s2lp_internal_process(void) {
 	// Local variables.
 	sfx_u8 idx = 0;
 #ifdef ERROR_CODES
-	RF_API_status_t status = S2LP_RF_API_SUCCESS;
+	RF_API_status_t status = RF_API_SUCCESS;
 #endif
 	// Perform state machine.
 	switch (s2lp_rf_api_ctx.state) {
@@ -282,13 +280,13 @@ static RF_API_status_t _internal_process(void) {
 		s2lp_rf_api_ctx.tx_bit_idx = 0;
 		s2lp_rf_api_ctx.tx_byte_idx = 0;
 		// Fill ramp-up.
-		for (idx=0 ; idx<S2LP_RF_API_RAMP_PROFILE_SIZE_BYTES ; idx++) {
+		for (idx=0 ; idx<S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES ; idx++) {
 			s2lp_rf_api_ctx.ramp_fifo_buffer[(2 * idx)] = 0; // Deviation.
 			s2lp_rf_api_ctx.ramp_fifo_buffer[(2 * idx) + 1] = s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr[S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES - idx - 1]; // PA output power.
 		}
 		// Load ramp-up buffer into FIFO.
 		S2LPCmdStrobeFlushTxFifo();
-		SdkEvalSpiWriteFifo(S2LP_RF_API_RAMP_FIFO_BUFFER_SIZE_BYTES, (sfx_u8*) s2lp_rf_api_ctx.ramp_fifo_buffer);
+		SdkEvalSpiWriteFifo(S2LP_RF_API_SYMBOL_FIFO_BUFFER_SIZE_BYTES, (sfx_u8*) s2lp_rf_api_ctx.ramp_fifo_buffer);
 		// Enable external GPIO interrupt.
 		S2LPGpioIrqClearStatus();
 		s2lp_rf_api_ctx.flags.field.irq_enable = 1;
@@ -341,12 +339,12 @@ static RF_API_status_t _internal_process(void) {
 		// Check FIFO flag.
 		if (S2LPGpioIrqCheckFlag(TX_FIFO_ALMOST_EMPTY) != 0) {
 			// Fill ramp-down.
-			for (idx=0 ; idx<S2LP_RF_API_RAMP_PROFILE_SIZE_BYTES ; idx++) {
+			for (idx=0 ; idx<S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES ; idx++) {
 				s2lp_rf_api_ctx.ramp_fifo_buffer[(2 * idx)] = 0; // FDEV.
 				s2lp_rf_api_ctx.ramp_fifo_buffer[(2 * idx) + 1] = s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr[idx]; // PA output power for ramp-down.
 			}
 			// Load ramp-down buffer into FIFO.
-			SdkEvalSpiWriteFifo(S2LP_RF_API_RAMP_FIFO_BUFFER_SIZE_BYTES, (sfx_u8*) s2lp_rf_api_ctx.ramp_fifo_buffer);
+			SdkEvalSpiWriteFifo(S2LP_RF_API_SYMBOL_FIFO_BUFFER_SIZE_BYTES, (sfx_u8*) s2lp_rf_api_ctx.ramp_fifo_buffer);
 			// Update state.
 			s2lp_rf_api_ctx.state = S2LP_RF_API_STATE_TX_PADDING_BIT;
 			// Clear flag.
@@ -371,6 +369,8 @@ static RF_API_status_t _internal_process(void) {
 	case S2LP_RF_API_STATE_TX_END:
 		// Check FIFO flag.
 		if (S2LPGpioIrqCheckFlag(TX_FIFO_ALMOST_EMPTY) != 0) {
+			// Stop radio.
+			S2LPCmdStrobeSabort();
 			// Disable interrupt.
 			s2lp_rf_api_ctx.flags.field.irq_enable = 0;
 			S2LPGpioIrqClearStatus();
@@ -389,6 +389,8 @@ static RF_API_status_t _internal_process(void) {
 		S2LPGpioIrqClearStatus();
 		s2lp_rf_api_ctx.flags.field.irq_enable = 1;
 		// Start radio.
+		S2LPCmdStrobeLockRx();
+		_wait_for_s2lp_state_switch(MC_STATE_LOCKON);
 		S2LPCmdStrobeRx();
 		_wait_for_s2lp_state_switch(MC_STATE_RX);
 		// Update state.
@@ -398,8 +400,10 @@ static RF_API_status_t _internal_process(void) {
 		// Check RX data flag.
 		if (S2LPGpioIrqCheckFlag(RX_DATA_READY) != 0) {
 			// Read FIFO and RSSI.
-			SdkEvalSpiReadFifo(SIGFOX_DL_PHY_CONTENT_SIZE_BYTES, s2lp_rf_api_ctx.dl_phy_content);
-			s2lp_rf_api_ctx.dl_rssi_dbm = (int16_t) S2LPRadioGetRssidBm();
+			SdkEvalSpiReadFifo(SIGFOX_DL_PHY_CONTENT_SIZE_BYTES, (sfx_u8*) s2lp_rf_api_ctx.dl_phy_content);
+			s2lp_rf_api_ctx.dl_rssi_dbm = (sfx_s16) S2LPRadioGetRssidBm();
+			// Stop radio.
+			S2LPCmdStrobeSabort();
 			// Clear flag.
 			S2LPGpioIrqClearStatus();
 			// Disable interrupt.
@@ -491,10 +495,10 @@ RF_API_status_t S2LP_RF_API_process(void) {
 	// Run internal process.
 	while (s2lp_rf_api_ctx.flags.field.irq_process != 0) {
 #ifdef ERROR_CODES
-		status = _internal_process();
+		status = _s2lp_internal_process();
 		CHECK_STATUS(RF_API_SUCCESS);
 #else
-		_internal_process();
+		_s2lp_internal_process();
 #endif
 	}
 #ifdef ERROR_CODES
@@ -534,7 +538,7 @@ RF_API_status_t S2LP_RF_API_sleep(void) {
 RF_API_status_t S2LP_RF_API_init(RF_API_radio_parameters_t *radio_parameters) {
 	// Local variables.
 #ifdef ERROR_CODES
-	RF_API_status_t status = S2LP_RF_API_SUCCESS;
+	RF_API_status_t status = RF_API_SUCCESS;
 	S2LP_HW_API_status_t s2lp_hw_api_status = S2LP_HW_API_SUCCESS;
 #endif
 	sfx_u8 s2lp_status = 0;
@@ -616,23 +620,23 @@ RF_API_status_t S2LP_RF_API_init(RF_API_radio_parameters_t *radio_parameters) {
 	case RF_API_MODE_TX:
 #ifdef TX_POWER_DBM_EIRP
 #if (TX_POWER_DBM_EIRP == 0)
-		s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr = (sfx_u8*) RF_API_RAMP_AMPLITUDE_PROFILE_00_DBM;
-		s2lp_rf_api_ctx.tx_bit_0_amplitude_profile_ptr = (sfx_u8*) RF_API_BIT0_AMPLITUDE_PROFILE_00_DBM;
+		s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr = (sfx_u8*) S2LP_RF_API_RAMP_AMPLITUDE_PROFILE_00_DBM;
+		s2lp_rf_api_ctx.tx_bit_0_amplitude_profile_ptr = (sfx_u8*) S2LP_RF_API_BIT0_AMPLITUDE_PROFILE_00_DBM;
 #elif (TX_POWER_DBM_EIRP == 3)
-		s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr = (sfx_u8*) RF_API_RAMP_AMPLITUDE_PROFILE_03_DBM;
-		s2lp_rf_api_ctx.tx_bit_0_amplitude_profile_ptr = (sfx_u8*) RF_API_BIT0_AMPLITUDE_PROFILE_03_DBM;
+		s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr = (sfx_u8*) S2LP_RF_API_RAMP_AMPLITUDE_PROFILE_03_DBM;
+		s2lp_rf_api_ctx.tx_bit_0_amplitude_profile_ptr = (sfx_u8*) S2LP_RF_API_BIT0_AMPLITUDE_PROFILE_03_DBM;
 #elif (TX_POWER_DBM_EIRP == 5)
-		s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr = (sfx_u8*) RF_API_RAMP_AMPLITUDE_PROFILE_05_DBM;
-		s2lp_rf_api_ctx.tx_bit_0_amplitude_profile_ptr = (sfx_u8*) RF_API_BIT0_AMPLITUDE_PROFILE_05_DBM;
+		s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr = (sfx_u8*) S2LP_RF_API_RAMP_AMPLITUDE_PROFILE_05_DBM;
+		s2lp_rf_api_ctx.tx_bit_0_amplitude_profile_ptr = (sfx_u8*) S2LP_RF_API_BIT0_AMPLITUDE_PROFILE_05_DBM;
 #elif (TX_POWER_DBM_EIRP == 7)
-		s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr = (sfx_u8*) RF_API_RAMP_AMPLITUDE_PROFILE_07_DBM;
-		s2lp_rf_api_ctx.tx_bit_0_amplitude_profile_ptr = (sfx_u8*) RF_API_BIT0_AMPLITUDE_PROFILE_07_DBM;
+		s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr = (sfx_u8*) S2LP_RF_API_RAMP_AMPLITUDE_PROFILE_07_DBM;
+		s2lp_rf_api_ctx.tx_bit_0_amplitude_profile_ptr = (sfx_u8*) S2LP_RF_API_BIT0_AMPLITUDE_PROFILE_07_DBM;
 #elif (TX_POWER_DBM_EIRP == 10)
-		s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr = (sfx_u8*) RF_API_RAMP_AMPLITUDE_PROFILE_10_DBM;
-		s2lp_rf_api_ctx.tx_bit_0_amplitude_profile_ptr = (sfx_u8*) RF_API_BIT0_AMPLITUDE_PROFILE_10_DBM;
+		s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr = (sfx_u8*) S2LP_RF_API_RAMP_AMPLITUDE_PROFILE_10_DBM;
+		s2lp_rf_api_ctx.tx_bit_0_amplitude_profile_ptr = (sfx_u8*) S2LP_RF_API_BIT0_AMPLITUDE_PROFILE_10_DBM;
 #elif (TX_POWER_DBM_EIRP == 14)
-		s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr = (sfx_u8*) RF_API_RAMP_AMPLITUDE_PROFILE_14_DBM;
-		s2lp_rf_api_ctx.tx_bit_0_amplitude_profile_ptr = (sfx_u8*) RF_API_BIT0_AMPLITUDE_PROFILE_14_DBM;
+		s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr = (sfx_u8*) S2LP_RF_API_RAMP_AMPLITUDE_PROFILE_14_DBM;
+		s2lp_rf_api_ctx.tx_bit_0_amplitude_profile_ptr = (sfx_u8*) S2LP_RF_API_BIT0_AMPLITUDE_PROFILE_14_DBM;
 #else
 #error "S2LP RF API flags error: unsupported TX_POWER_DBM_EIRP value."
 #endif
@@ -640,28 +644,28 @@ RF_API_status_t S2LP_RF_API_init(RF_API_radio_parameters_t *radio_parameters) {
 		// Allocate output power tables.
 		switch (radio_parameters -> tx_power_dbm_eirp) {
 		case 0:
-			s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr = (sfx_u8*) RF_API_RAMP_AMPLITUDE_PROFILE_00_DBM;
-			s2lp_rf_api_ctx.tx_bit_0_amplitude_profile_ptr = (sfx_u8*) RF_API_BIT0_AMPLITUDE_PROFILE_00_DBM;
+			s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr = (sfx_u8*) S2LP_RF_API_RAMP_AMPLITUDE_PROFILE_00_DBM;
+			s2lp_rf_api_ctx.tx_bit_0_amplitude_profile_ptr = (sfx_u8*) S2LP_RF_API_BIT0_AMPLITUDE_PROFILE_00_DBM;
 			break;
 		case 3:
-			s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr = (sfx_u8*) RF_API_RAMP_AMPLITUDE_PROFILE_03_DBM;
-			s2lp_rf_api_ctx.tx_bit_0_amplitude_profile_ptr = (sfx_u8*) RF_API_BIT0_AMPLITUDE_PROFILE_03_DBM;
+			s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr = (sfx_u8*) S2LP_RF_API_RAMP_AMPLITUDE_PROFILE_03_DBM;
+			s2lp_rf_api_ctx.tx_bit_0_amplitude_profile_ptr = (sfx_u8*) S2LP_RF_API_BIT0_AMPLITUDE_PROFILE_03_DBM;
 			break;
 		case 5:
-			s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr = (sfx_u8*) RF_API_RAMP_AMPLITUDE_PROFILE_05_DBM;
-			s2lp_rf_api_ctx.tx_bit_0_amplitude_profile_ptr = (sfx_u8*) RF_API_BIT0_AMPLITUDE_PROFILE_05_DBM;
+			s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr = (sfx_u8*) S2LP_RF_API_RAMP_AMPLITUDE_PROFILE_05_DBM;
+			s2lp_rf_api_ctx.tx_bit_0_amplitude_profile_ptr = (sfx_u8*) S2LP_RF_API_BIT0_AMPLITUDE_PROFILE_05_DBM;
 			break;
 		case 7:
-			s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr = (sfx_u8*) RF_API_RAMP_AMPLITUDE_PROFILE_07_DBM;
-			s2lp_rf_api_ctx.tx_bit_0_amplitude_profile_ptr = (sfx_u8*) RF_API_BIT0_AMPLITUDE_PROFILE_07_DBM;
+			s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr = (sfx_u8*) S2LP_RF_API_RAMP_AMPLITUDE_PROFILE_07_DBM;
+			s2lp_rf_api_ctx.tx_bit_0_amplitude_profile_ptr = (sfx_u8*) S2LP_RF_API_BIT0_AMPLITUDE_PROFILE_07_DBM;
 			break;
 		case 10:
-			s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr = (sfx_u8*) RF_API_RAMP_AMPLITUDE_PROFILE_10_DBM;
-			s2lp_rf_api_ctx.tx_bit_0_amplitude_profile_ptr = (sfx_u8*) RF_API_BIT0_AMPLITUDE_PROFILE_10_DBM;
+			s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr = (sfx_u8*) S2LP_RF_API_RAMP_AMPLITUDE_PROFILE_10_DBM;
+			s2lp_rf_api_ctx.tx_bit_0_amplitude_profile_ptr = (sfx_u8*) S2LP_RF_API_BIT0_AMPLITUDE_PROFILE_10_DBM;
 			break;
 		case 14:
-			s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr = (sfx_u8*) RF_API_RAMP_AMPLITUDE_PROFILE_14_DBM;
-			s2lp_rf_api_ctx.tx_bit_0_amplitude_profile_ptr = (sfx_u8*) RF_API_BIT0_AMPLITUDE_PROFILE_14_DBM;
+			s2lp_rf_api_ctx.tx_ramp_amplitude_profile_ptr = (sfx_u8*) S2LP_RF_API_RAMP_AMPLITUDE_PROFILE_14_DBM;
+			s2lp_rf_api_ctx.tx_bit_0_amplitude_profile_ptr = (sfx_u8*) S2LP_RF_API_BIT0_AMPLITUDE_PROFILE_14_DBM;
 			break;
 		default:
 			EXIT_ERROR(S2LP_RF_API_ERROR_TX_POWER);
@@ -670,6 +674,10 @@ RF_API_status_t S2LP_RF_API_init(RF_API_radio_parameters_t *radio_parameters) {
 #endif /* TX_POWER_DBM_EIRP */
 		// Configure IRQ mask.
 		S2LPGpioIrqConfig(TX_FIFO_ALMOST_EMPTY, S_ENABLE);
+		S2LPFifoMuxRxFifoIrqEnable(S_DISABLE);
+		// FIFO.
+		S2LPPacketHandlerSetTxMode(DIRECT_TX_FIFO_MODE);
+		S2LPFifoSetAlmostEmptyThresholdTx(S2LP_RF_API_FIFO_TX_ALMOST_EMPTY_THRESHOLD);
 		// PA configuration.
 		S2LPRadioSetMaxPALevel(S_DISABLE);
 		S2LPRadioSetManualRampingMode(S_DISABLE);
@@ -677,15 +685,11 @@ RF_API_status_t S2LP_RF_API_init(RF_API_radio_parameters_t *radio_parameters) {
 		SdkEvalSpiReadRegisters(MOD1_ADDR, 1, &reg_value);
 		reg_value |= PA_INTERP_EN_REGMASK; // Enable interpolator.
 		SdkEvalSpiWriteRegisters(MOD1_ADDR, 1, &reg_value);
-		// FIFO.
-		S2LPPacketHandlerSetTxMode(DIRECT_TX_FIFO_MODE);
-		S2LPFifoMuxRxFifoIrqEnable(S_DISABLE);
-		S2LPFifoSetAlmostEmptyThresholdTx(S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES / 2);
 #if (defined TIMER_REQUIRED) && (defined LATENCY_COMPENSATION)
-		// Start latency = ramp-up.
-		S2LP_RF_API_LATENCY_MS[RF_API_LATENCY_SEND_START] = (1000 * S2LP_RF_API_RAMP_PROFILE_SIZE_BYTES) / (s2lp_datarate * S2LP_RF_API_POLAR_DATARATE_MULTIPLIER);
-		// Stop latency = ramp-down + half of padding bit (since IRQ is raised when FIFO is half empty).
-		S2LP_RF_API_LATENCY_MS[RF_API_LATENCY_SEND_STOP] = (1000 * (S2LP_RF_API_RAMP_PROFILE_SIZE_BYTES + (S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES / 2))) / (s2lp_datarate * S2LP_RF_API_POLAR_DATARATE_MULTIPLIER);
+		// Start latency = 1 symbol of ramp-up.
+		S2LP_RF_API_LATENCY_MS[RF_API_LATENCY_SEND_START] = ((1000) / ((sfx_u32) (radio_parameters -> bit_rate_bps)));
+		// Stop latency = 1 symbol of ramp-down + half of padding symbol (since IRQ is raised at the middle of the symbol).
+		S2LP_RF_API_LATENCY_MS[RF_API_LATENCY_SEND_STOP] = ((1500) / ((sfx_u32) (radio_parameters -> bit_rate_bps)));
 #endif
 		break;
 #if (defined BIDIRECTIONAL) || ((defined REGULATORY && (defined SPECTRUM_ACCESS_LBT)))
@@ -693,8 +697,13 @@ RF_API_status_t S2LP_RF_API_init(RF_API_radio_parameters_t *radio_parameters) {
 #ifdef BIDIRECTIONAL
 		// Configure IRQ mask.
 		S2LPGpioIrqConfig(RX_DATA_READY, S_ENABLE);
+		S2LPFifoMuxRxFifoIrqEnable(S_ENABLE);
+		// FIFO.
+		S2LPPacketHandlerSetRxMode(NORMAL_RX_MODE);
 		// RX bandwidth.
 		S2LPRadioSetChannelBW(S2LP_RF_API_RX_BANDWIDTH_HZ);
+		// RSSI threshold.
+		S2LPRadioSetRssiThreshdBm(S2LP_RF_API_DOWNLINK_RSSI_THRESHOLD_DBM);
 		// Disable equalization, antenna switching and carrier sense.
 		S2LPRadioSetIsiEqualizationMode(ISI_EQUALIZATION_DISABLED);
 		S2LPRadioAntennaSwitching(S_DISABLE);
@@ -727,12 +736,6 @@ RF_API_status_t S2LP_RF_API_init(RF_API_radio_parameters_t *radio_parameters) {
 		clock_rec_init.cClkRec16SymPostFlt = S_ENABLE;
 		clock_rec_init.cClkRecIGainFast = 0;
 		S2LPRadioSymClkRecoverInit(&clock_rec_init);
-		// Set RSSI threshold.
-		S2LPRadioSetRssiThreshdBm(S2LP_RF_API_DOWNLINK_RSSI_THRESHOLD_DBM);
-		// FIFO.
-		S2LPPacketHandlerSetRxMode(NORMAL_RX_MODE);
-		S2LPFifoMuxRxFifoIrqEnable(S_DISABLE);
-		S2LPFifoSetAlmostFullThresholdTx(SIGFOX_DL_PHY_CONTENT_SIZE_BYTES);
 		break;
 #endif /* BIDIRECTIONAL */
 #endif
@@ -766,7 +769,7 @@ RF_API_status_t S2LP_RF_API_de_init(void) {
 RF_API_status_t S2LP_RF_API_send(RF_API_tx_data_t *tx_data) {
 	// Local variables.
 #ifdef ERROR_CODES
-	RF_API_status_t status = S2LP_RF_API_SUCCESS;
+	RF_API_status_t status = RF_API_SUCCESS;
 #endif
 	sfx_u8 idx = 0;
 	// Store TX data.
@@ -785,18 +788,22 @@ RF_API_status_t S2LP_RF_API_send(RF_API_tx_data_t *tx_data) {
 	// Trigger TX.
 	s2lp_rf_api_ctx.state = S2LP_RF_API_STATE_TX_RAMP_UP;
 #ifdef ERROR_CODES
-	status = _internal_process();
+	status = _s2lp_internal_process();
 	CHECK_STATUS(RF_API_SUCCESS);
 #else
-	_internal_process();
+	_s2lp_internal_process();
 #endif
 #ifndef ASYNCHRONOUS
+	// Wait for transmission to complete.
 	while (s2lp_rf_api_ctx.state != S2LP_RF_API_STATE_READY) {
+		// Wait for GPIO interrupt.
+		while (s2lp_rf_api_ctx.flags.field.irq_process == 0);
+		// Call process function.
 #ifdef ERROR_CODES
-		status = _internal_process();
+		status = _s2lp_internal_process();
 		CHECK_STATUS(RF_API_SUCCESS);
 #else
-		_internal_process();
+		_s2lp_internal_process();
 #endif
 	}
 #endif
@@ -809,7 +816,7 @@ errors:
 RF_API_status_t S2LP_RF_API_receive(RF_API_rx_data_t *rx_data) {
 	// Local variables.
 #ifdef ERROR_CODES
-	RF_API_status_t status = S2LP_RF_API_SUCCESS;
+	RF_API_status_t status = RF_API_SUCCESS;
 #ifndef ASYNCHRONOUS
 	MCU_API_status_t mcu_api_status = MCU_API_SUCCESS;
 #endif
@@ -825,30 +832,42 @@ RF_API_status_t S2LP_RF_API_receive(RF_API_rx_data_t *rx_data) {
 	// Trigger RX.
 	s2lp_rf_api_ctx.state = S2LP_RF_API_STATE_RX_START;
 #ifdef ERROR_CODES
-	status = _internal_process();
+	status = _s2lp_internal_process();
 	CHECK_STATUS(RF_API_SUCCESS);
 #else
-	_internal_process();
+	_s2lp_internal_process();
 #endif
 #ifndef ASYNCHRONOUS
+	// Wait for reception to complete.
 	while (s2lp_rf_api_ctx.state != S2LP_RF_API_STATE_READY) {
+		// Wait for GPIO interrupt.
+		while (s2lp_rf_api_ctx.flags.field.irq_process == 0) {
+			// Check timeout.
 #ifdef ERROR_CODES
-		status = _internal_process();
+			mcu_api_status = MCU_API_timer_status(MCU_API_TIMER_INSTANCE_T_RX, &dl_timeout);
+			MCU_API_check_status(S2LP_RF_API_ERROR_DRIVER_MCU_API);
+#else
+			MCU_API_timer_status(MCU_API_TIMER_INSTANCE_T_RX, &dl_timeout);
+#endif
+			// Exit if timeout.
+			if (dl_timeout == SFX_TRUE) {
+				// Stop radio.
+				S2LPCmdStrobeSabort();
+				goto errors;
+			}
+		}
+		// Call process function.
+#ifdef ERROR_CODES
+		status = _s2lp_internal_process();
 		CHECK_STATUS(RF_API_SUCCESS);
 #else
-		_internal_process();
+		_s2lp_internal_process();
 #endif
-		// Check timeout.
-#ifdef ERROR_CODES
-		mcu_api_status = MCU_API_timer_status(MCU_API_TIMER_INSTANCE_T_RX, &dl_timeout);
-		MCU_API_check_status(S2LP_RF_API_ERROR_DRIVER_MCU_API);
-#else
-		MCU_API_timer_status(MCU_API_TIMER_INSTANCE_T_RX, &dl_timeout);
-#endif
-		if (dl_timeout == SFX_TRUE) break;
 	}
+	// Update status flag.
+	(rx_data -> data_received) = SFX_TRUE;
 #endif
-#ifdef ERROR_CODES
+#if (defined ERROR_CODES) || !(defined ASYNCHRONOUS)
 errors:
 #endif
 	RETURN();
