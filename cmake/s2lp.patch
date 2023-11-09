@@ -1451,7 +1451,7 @@ index c0f189b..d5ee608 100644
  }
  
 diff --git a/Drivers/BSP/Components/S2LP/S2LP_Library/src/S2LP_Radio.c b/Drivers/BSP/Components/S2LP/S2LP_Library/src/S2LP_Radio.c
-index 245da9f..17ed120 100644
+index 245da9f..a1c0c91 100644
 --- a/Drivers/BSP/Components/S2LP/S2LP_Library/src/S2LP_Radio.c
 +++ b/Drivers/BSP/Components/S2LP/S2LP_Library/src/S2LP_Radio.c
 @@ -24,8 +24,11 @@
@@ -1665,7 +1665,24 @@ index 245da9f..17ed120 100644
  }
  
  
-@@ -1219,7 +1222,7 @@ void S2LPRadioSetPALeveldBm(uint8_t cIndex, int32_t lPowerdBm)
+@@ -1209,17 +1212,22 @@ void S2LPRadioSetPALeveldBm(uint8_t cIndex, int32_t lPowerdBm)
+   s_assert_param(IS_PA_MAX_INDEX(cIndex));
+   s_assert_param(IS_PAPOWER_DBM(lPowerdBm));
+ 
+-  if(lPowerdBm> 14)
++  if(lPowerdBm >= 14)
+   {
+     paLevelValue = 1;
+   }
+   else {
+-    paLevelValue = (uint8_t)((int32_t)25-2*lPowerdBm);
++	if (lPowerdBm >= 11) {
++	  paLevelValue = (uint8_t) ((int32_t) 15 - lPowerdBm);
++	}
++	else {
++	  paLevelValue = (uint8_t) ((int32_t) 25 - 2 * lPowerdBm);
++	}
+   }
  
    address = PA_POWER8_ADDR + 7 - cIndex;
  
@@ -1674,16 +1691,32 @@ index 245da9f..17ed120 100644
  }
  
  
-@@ -1237,7 +1240,7 @@ int32_t S2LPRadioGetPALeveldBm(uint8_t cIndex)
+@@ -1232,14 +1240,22 @@ void S2LPRadioSetPALeveldBm(uint8_t cIndex, int32_t lPowerdBm)
+ */
+ int32_t S2LPRadioGetPALeveldBm(uint8_t cIndex)
+ {
++  int32_t lPowerdBm = 0;
+   uint8_t address, paLevelValue;
+   s_assert_param(IS_PA_MAX_INDEX(cIndex));
  
    address = PA_POWER8_ADDR + 7 - cIndex;
  
 -  *(uint8_t*)&g_xStatus = S2LPSpiReadRegisters(address, 1, &paLevelValue);
 +  *(S2LPStatus*)&g_xStatus = S2LPSpiReadRegisters(address, 1, &paLevelValue);
++
++  if (paLevelValue <= 4) {
++    lPowerdBm = (int32_t) (15 - paLevelValue);
++  }
++  else {
++    lPowerdBm = (int32_t) ((25 - paLevelValue) / 2);
++  }
  
-   return ((int32_t)25-paLevelValue)/2;
+-  return ((int32_t)25-paLevelValue)/2;
++  return lPowerdBm;
  }
-@@ -1256,7 +1259,7 @@ void S2LPRadioSetPALevelMaxIndex(uint8_t cIndex)
+ 
+ 
+@@ -1256,7 +1272,7 @@ void S2LPRadioSetPALevelMaxIndex(uint8_t cIndex)
    S2LPSpiReadRegisters(PA_POWER0_ADDR, 1, &tmp);
    tmp &= (~PA_LEVEL_MAX_IDX_REGMASK);
    tmp |= cIndex;
@@ -1692,7 +1725,7 @@ index 245da9f..17ed120 100644
  }
  
  
-@@ -1268,7 +1271,7 @@ void S2LPRadioSetPALevelMaxIndex(uint8_t cIndex)
+@@ -1268,7 +1284,7 @@ void S2LPRadioSetPALevelMaxIndex(uint8_t cIndex)
  uint8_t S2LPRadioGetPALevelMaxIndex(void)
  {
    uint8_t tmp;
@@ -1701,7 +1734,7 @@ index 245da9f..17ed120 100644
    return (tmp & PA_LEVEL_MAX_IDX_REGMASK);
  }
  
-@@ -1298,7 +1301,7 @@ void S2LPRadioSetAutoRampingMode(SFunctionalState xNewState)
+@@ -1298,7 +1314,7 @@ void S2LPRadioSetAutoRampingMode(SFunctionalState xNewState)
      tmpBuffer[1] &= ~FIR_EN_REGMASK;
    }
  
@@ -1710,7 +1743,7 @@ index 245da9f..17ed120 100644
  }
  
  
-@@ -1326,7 +1329,7 @@ void S2LPRadioSetManualRampingMode(SFunctionalState xNewState)
+@@ -1326,7 +1342,7 @@ void S2LPRadioSetManualRampingMode(SFunctionalState xNewState)
      tmpBuffer[0] &= ~PA_RAMP_EN_REGMASK;
    }
  
@@ -1719,7 +1752,7 @@ index 245da9f..17ed120 100644
  }
  
  
-@@ -1355,7 +1358,7 @@ void S2LPRadioCalibrationVco(SFunctionalState xAmplitudeCalibration, SFunctional
+@@ -1355,7 +1371,7 @@ void S2LPRadioCalibrationVco(SFunctionalState xAmplitudeCalibration, SFunctional
    } else {
      tmp &= ~VCO_CALFREQ_EXT_SEL_REGMASK;
    }
@@ -1728,7 +1761,7 @@ index 245da9f..17ed120 100644
  }
  
  /**
-@@ -1366,7 +1369,7 @@ void S2LPRadioCalibrationVco(SFunctionalState xAmplitudeCalibration, SFunctional
+@@ -1366,7 +1382,7 @@ void S2LPRadioCalibrationVco(SFunctionalState xAmplitudeCalibration, SFunctional
  void S2LPRadioSetTxCalibVcoAmpWord(uint8_t value)
  {
    value <<= 4;
@@ -1737,7 +1770,7 @@ index 245da9f..17ed120 100644
  }
  
  /**
-@@ -1377,7 +1380,7 @@ void S2LPRadioSetTxCalibVcoAmpWord(uint8_t value)
+@@ -1377,7 +1393,7 @@ void S2LPRadioSetTxCalibVcoAmpWord(uint8_t value)
  void S2LPRadioSetRxCalibVcoAmpWord(uint8_t value)
  {
    value &= VCO_CALAMP_RX_REGMASK;
@@ -1746,7 +1779,7 @@ index 245da9f..17ed120 100644
  }
  
  /**
-@@ -1387,7 +1390,7 @@ void S2LPRadioSetRxCalibVcoAmpWord(uint8_t value)
+@@ -1387,7 +1403,7 @@ void S2LPRadioSetRxCalibVcoAmpWord(uint8_t value)
  */
  void S2LPRadioSetTxCalibVcoFreqWord(uint8_t value)
  {
@@ -1755,7 +1788,7 @@ index 245da9f..17ed120 100644
  }
  
  /**
-@@ -1397,7 +1400,7 @@ void S2LPRadioSetTxCalibVcoFreqWord(uint8_t value)
+@@ -1397,7 +1413,7 @@ void S2LPRadioSetTxCalibVcoFreqWord(uint8_t value)
  */
  void S2LPRadioSetRxCalibVcoFreqWord(uint8_t value)
  {
@@ -1764,7 +1797,7 @@ index 245da9f..17ed120 100644
  }
  
  
-@@ -1445,7 +1448,7 @@ void S2LPRadioAfcInit(SAfcInit* xSAfcInit)
+@@ -1445,7 +1461,7 @@ void S2LPRadioAfcInit(SAfcInit* xSAfcInit)
    tmpBuffer[1] = xSAfcInit->cAfcFastPeriod;
    tmpBuffer[2] = (xSAfcInit->cAfcFastGain<<4) | xSAfcInit->cAfcSlowGain;
  
@@ -1773,7 +1806,7 @@ index 245da9f..17ed120 100644
  }
  
  
-@@ -1484,7 +1487,7 @@ void S2LPRadioSetIsiEqualizationMode(SIsiEqu xSIsiMode)
+@@ -1484,7 +1500,7 @@ void S2LPRadioSetIsiEqualizationMode(SIsiEqu xSIsiMode)
    S2LPSpiReadRegisters(ANT_SELECT_CONF_ADDR, 1, &tmp);
    tmp &= ~EQU_CTRL_REGMASK;
    tmp |= (((uint8_t)xSIsiMode)<<5);
@@ -1782,7 +1815,7 @@ index 245da9f..17ed120 100644
  }
  
  
-@@ -1497,7 +1500,7 @@ SIsiEqu S2LPRadioGetIsiEqualizationMode(void)
+@@ -1497,7 +1513,7 @@ SIsiEqu S2LPRadioGetIsiEqualizationMode(void)
  {
    uint8_t tmp;
  
@@ -1791,7 +1824,7 @@ index 245da9f..17ed120 100644
    return (SIsiEqu)((tmp&EQU_CTRL_REGMASK)>>5);
  
  }
-@@ -1532,7 +1535,7 @@ void S2LPRadioSymClkRecoverInit(SSymClkRecInit* xSSymClkRecInit)
+@@ -1532,7 +1548,7 @@ void S2LPRadioSymClkRecoverInit(SSymClkRecInit* xSSymClkRecInit)
    tmpBuffer[1] |= xSSymClkRecInit->cClkRecIGainFast;
    tmpBuffer[1] |= (xSSymClkRecInit->cClkRecPGainFast<<5);
  

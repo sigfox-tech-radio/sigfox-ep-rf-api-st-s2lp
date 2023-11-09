@@ -108,7 +108,7 @@ typedef enum {
  * \brief S2LP driver callback functions.
  * \fn S2LP_HW_API_irq_cb_t		To be called when a falling edge is detected on the S2LP GPIO.
  *******************************/
-typedef void (S2LP_HW_API_irq_cb_t)(void);
+typedef void (*S2LP_HW_API_irq_cb_t)(void);
 
 /*** S2LP HW API functions ***/
 
