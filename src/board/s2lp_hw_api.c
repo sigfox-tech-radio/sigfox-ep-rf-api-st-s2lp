@@ -39,27 +39,18 @@
 #ifdef USE_SIGFOX_EP_FLAGS_H
 #include "sigfox_ep_flags.h"
 #endif
-// Sigfox EP library.
 #include "sigfox_error.h"
 #include "sigfox_types.h"
+#include "manuf/rf_api.h"
 
 /*** S2LP HW API functions ***/
 
 /*******************************************************************/
-S2LP_HW_API_status_t S2LP_HW_API_open(S2LP_HW_API_irq_cb_t gpio_irq_callback) {
+S2LP_HW_API_status_t S2LP_HW_API_open(S2LP_HW_API_config_t* hw_api_config) {
 	/* To be implemented by the device manufacturer */
 #ifdef ERROR_CODES
 	S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
 #endif
-
-	// Configure the S2LP_SDN pin as output.
-	// Enter shutdown mode.
-	// Perform a 100ms delay to ensure S2LP_SDN is kept high during a minimum time.
-
-	// Configure the S2LP_GPIOx pin as IRQ input.
-	// A falling edge on this pins wakes-up the MCU in order to handle radio interrupts.
-	// The gpio_irq_callback function has to be called when such event occurs.
-
 	RETURN();
 }
 
@@ -69,9 +60,24 @@ S2LP_HW_API_status_t S2LP_HW_API_close(void) {
 #ifdef ERROR_CODES
 	S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
 #endif
+	RETURN();
+}
 
-	// Release the S2LP_SDN and S2LP_GPIOx pins.
+/*******************************************************************/
+S2LP_HW_API_status_t S2LP_HW_API_init(S2LP_radio_parameters_t *radio_parameters) {
+	/* To be implemented by the device manufacturer */
+#ifdef ERROR_CODES
+	S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
+#endif
+	RETURN();
+}
 
+/*******************************************************************/
+S2LP_HW_API_status_t S2LP_HW_API_de_init(void) {
+	/* To be implemented by the device manufacturer */
+#ifdef ERROR_CODES
+	S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
+#endif
 	RETURN();
 }
 
@@ -86,6 +92,15 @@ S2LP_HW_API_status_t S2LP_HW_API_get_oscillator(S2LP_HW_API_oscillator_type_t *x
 
 /*******************************************************************/
 S2LP_HW_API_status_t S2LP_HW_API_get_gpio(S2LP_HW_API_signal_t signal, S2LP_HW_API_gpio_t *s2lp_gpio) {
+	/* To be implemented by the device manufacturer */
+#ifdef ERROR_CODES
+	S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
+#endif
+	RETURN();
+}
+
+/*******************************************************************/
+S2LP_HW_API_status_t S2LP_HW_API_get_tx_power(sfx_s8 expected_tx_power_dbm, sfx_s8 *s2lp_tx_power_dbm) {
 	/* To be implemented by the device manufacturer */
 #ifdef ERROR_CODES
 	S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;

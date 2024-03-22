@@ -40,6 +40,7 @@
 #ifdef USE_SIGFOX_EP_FLAGS_H
 #include "sigfox_ep_flags.h"
 #endif
+#include "sigfox_types.h"
 #include "manuf/rf_api.h"
 
 /*** S2LP RF API structures ***/
@@ -57,7 +58,6 @@ typedef enum {
 	S2LP_RF_API_ERROR_MODULATION,
 	S2LP_RF_API_ERROR_GPIO,
 	S2LP_RF_API_ERROR_TX_POWER,
-	S2LP_RF_API_ERROR_SYMBOL_TABLE,
 	S2LP_RF_API_ERROR_LATENCY_TYPE,
 	S2LP_RF_API_ERROR_STATE,
 	// Low level errors.
@@ -125,7 +125,7 @@ RF_API_status_t S2LP_RF_API_sleep(void);
 /*!******************************************************************
  * \fn RF_API_status_t S2LP_RF_API_init(RF_API_radio_parameters_t *radio_parameters)
  * \brief Initialize the radio operation before each individual frame transmission or reception.
- * \param[in]  	radio_parameters: Pointers to the radio parameters.
+ * \param[in]  	radio_parameters: Pointer to the radio parameters.
  * \param[out] 	none
  * \retval		Function execution status.
  *******************************************************************/

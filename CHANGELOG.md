@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v2.0](https://github.com/sigfox-tech-radio/sigfox-ep-rf-api-st-s2lp/releases/tag/v2.0) - 22 Mar 2024
+
+### Added
+
+* Add **dynamic amplitude tables** computation to **support all RF output powers**.
+
+### Fixed
+
+* Add cast on custom RF API **error codes**.
+* Fix **compilation warning** in send function when `ERROR_CODES` flag is not defined.
+
+### Changed
+
+* Improve **HW API interface** to support external radio front-end.
+* Remove `inline` keyword on RF API **functions redirection**.
+* Rename `RCx` compilation flags into `RCx_ZONE` for **Microchip MCUs compatibility**.
+
+### Known limitations
+
+* **LBT** not implemented.
+* **Modulated CW** not supported for type approval addon.
+
 ## [v1.3](https://github.com/sigfox-tech-radio/sigfox-ep-rf-api-st-s2lp/releases/tag/v1.3) - 09 Nov 2023
 
 ### Added

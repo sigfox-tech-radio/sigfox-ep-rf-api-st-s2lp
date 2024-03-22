@@ -41,6 +41,7 @@
 #include "sigfox_ep_flags.h"
 #endif
 #include "sigfox_types.h"
+#include "manuf/rf_api.h"
 
 /*** S2LP HW API structures ***/
 
@@ -76,7 +77,7 @@ typedef enum {
  * \brief S2LP external signals list.
  *******************************************************************/
 typedef enum {
-	S2LP_HW_API_SIGNAL_IRQ = 0,
+	S2LP_HW_API_SIGNAL_NIRQ = 0,
 	S2LP_HW_API_SIGNAL_LAST
 } S2LP_HW_API_signal_t;
 
@@ -100,30 +101,57 @@ typedef enum {
 typedef enum {
 	S2LP_HW_API_LATENCY_EXIT_SHUTDOWN = 0,
 	S2LP_HW_API_LATENCY_ENTER_SHUTDOWN,
+	S2LP_HW_API_LATENCY_INIT_TX,
+	S2LP_HW_API_LATENCY_DE_INIT_TX,
+#ifdef BIDIRECTIONAL
+	S2LP_HW_API_LATENCY_INIT_RX,
+	S2LP_HW_API_LATENCY_DE_INIT_RX,
+#endif
 	S2LP_HW_API_LATENCY_LAST
 } S2LP_HW_API_latency_t;
 #endif
 
-/********************************
- * \brief S2LP driver callback functions.
- * \fn S2LP_HW_API_irq_cb_t		To be called when a falling edge is detected on the S2LP GPIO.
- *******************************/
+/*!******************************************************************
+ * \brief S2LP driver IRQ callback functions.
+ * \fn S2LP_HW_API_irq_cb_t		To be called when the corresponding IRQ occurs.
+ *******************************************************************/
 typedef void (*S2LP_HW_API_irq_cb_t)(void);
+
+/*!******************************************************************
+ * \struct S2LP_HW_API_config_t
+ * \brief S2LP driver configuration structure.
+ *******************************************************************/
+typedef struct {
+	S2LP_HW_API_irq_cb_t gpio_irq_callback; // S2LP GPIOx pin interrupt callback.
+} S2LP_HW_API_config_t;
+
+/*!******************************************************************
+ * \struct S2LP_radio_parameters_t
+ * \brief S2LP radio parameters structure.
+ *******************************************************************/
+typedef struct {
+	RF_API_mode_t rf_mode;
+	sfx_s8 expected_tx_power_dbm;
+} S2LP_radio_parameters_t;
 
 /*** S2LP HW API functions ***/
 
 /*!******************************************************************
- * \fn S2LP_HW_API_status_t S2LP_HW_API_open(S2LP_HW_irq_cb_t gpio_irq_callback)
- * \brief Open the S2LP hardware interface. This function is called during RF_API_open() function of the manufacturer layer.
- * \param[in]  	gpio_irq_callback: GPIO interrupt callback that must be called on S2LP GPIOx pin interrupt.
+ * \fn S2LP_HW_API_status_t S2LP_HW_API_open(S2LP_HW_API_config_t* hw_api_config)
+ * \brief This function is called during the RF_API_open() function to open the S2LP hardware interface. It should:
+ * \brief - Configure the S2LP_SDN pin as output.
+ * \brief - Enter shutdown mode and perform a delay to ensure S2LP_SDN is kept high during a minimum time.
+ * \brief - Configure the S2LP_GPIOx pin as IRQ input: a falling edge on this pin must call the gpio_irq_callback function passed as parameter.
+ * \param[in]  	hw_api_config: Pointer to the HW API configuration.
  * \param[out] 	none
  * \retval		Function execution status.
  *******************************************************************/
-S2LP_HW_API_status_t S2LP_HW_API_open(S2LP_HW_API_irq_cb_t gpio_irq_callback);
+S2LP_HW_API_status_t S2LP_HW_API_open(S2LP_HW_API_config_t* hw_api_config);
 
 /*!******************************************************************
  * \fn S2LP_HW_API_status_t S2LP_HW_API_close(void)
- * \brief Close the S2LP hardware interface. This function is called during RF_API_close() function of the manufacturer layer.
+ * \brief This function is called during the RF_API_close() function to close the S2LP hardware interface. It should:
+ * \brief - Release the S2LP_SDN and S2LP_GPIOx pins.
  * \param[in]  	none
  * \param[out] 	none
  * \retval		Function execution status.
@@ -131,8 +159,26 @@ S2LP_HW_API_status_t S2LP_HW_API_open(S2LP_HW_API_irq_cb_t gpio_irq_callback);
 S2LP_HW_API_status_t S2LP_HW_API_close(void);
 
 /*!******************************************************************
- * \fn S2LP_HW_API_status_t S2LP_HW_API_get_xo_frequency_hz(sfx_u32 *xo_frequency_hz)
- * \brief Returns the S2LP crystal oscillator frequency.
+ * \fn S2LP_HW_API_status_t S2LP_HW_API_init(S2LP_radio_parameters_t *radio_parameters)
+ * \brief This optional function is called during the RF_API_init() function to configure additional hardware parameters.
+ * \param[in]  	radio_parameters: Pointers to the radio parameters.
+ * \param[out] 	none
+ * \retval		Function execution status.
+ *******************************************************************/
+S2LP_HW_API_status_t S2LP_HW_API_init(S2LP_radio_parameters_t *radio_parameters);
+
+/*!******************************************************************
+ * \fn S2LP_HW_API_status_t S2LP_HW_API_de_init(void)
+ * \brief This optional function is called during the RF_API_de_init() function to release additional hardware parameters.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		Function execution status.
+ *******************************************************************/
+S2LP_HW_API_status_t S2LP_HW_API_de_init(void);
+
+/*!******************************************************************
+ * \fn S2LP_HW_API_status_t S2LP_HW_API_get_oscillator(S2LP_HW_API_oscillator_type_t *xo_type, sfx_u32 *xo_frequency_hz)
+ * \brief Returns the crystal oscillator parameters attached to the S2LP.
  * \param[in]  	none
  * \param[out] 	xo_type: Pointer to the type of oscillator attached to S2LP.
  * \param[out] 	xo_frequency_hz: Pointer to the frequency of the oscillator attached to S2LP.
@@ -148,6 +194,16 @@ S2LP_HW_API_status_t S2LP_HW_API_get_oscillator(S2LP_HW_API_oscillator_type_t *x
  * \retval		Function execution status.
  *******************************************************************/
 S2LP_HW_API_status_t S2LP_HW_API_get_gpio(S2LP_HW_API_signal_t signal, S2LP_HW_API_gpio_t *s2lp_gpio);
+
+/*!******************************************************************
+ * \fn S2LP_HW_API_status_t S2LP_HW_API_get_tx_power(sfx_s8 expected_tx_power_dbm, sfx_s8 *s2lp_tx_power_dbm)
+ * \brief Returns the effective RF output power to program on the S2LP to get the expected value at board level.
+ * \brief This function is required when an external gain has to be compensated (typical case of an external PA). Otherwise the S2LP output power equals the expected value.
+ * \param[in]  	expected_tx_power_dbm: Expected output power in dBm (given by applicative level).
+ * \param[out] 	s2lp_tx_power_dbm: Pointer to the effective output power in dBm to program on the S2LP transceiver.
+ * \retval		Function execution status.
+ *******************************************************************/
+S2LP_HW_API_status_t S2LP_HW_API_get_tx_power(sfx_s8 expected_tx_power_dbm, sfx_s8 *s2lp_tx_power_dbm);
 
 #if (defined TIMER_REQUIRED) && (defined LATENCY_COMPENSATION)
 /*!******************************************************************
