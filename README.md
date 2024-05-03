@@ -11,6 +11,7 @@ The table below shows the versions compatibility between this radio example and 
 
 | **S2LP_RF_API** | **EP_LIB** |
 |:---:|:---:|
+| [v3.0](https://github.com/sigfox-tech-radio/sigfox-ep-rf-api-st-s2lp/releases/tag/v3.0) | >= [v3.5](https://github.com/sigfox-tech-radio/sigfox-ep-lib/releases/tag/v3.5) |
 | [v2.0](https://github.com/sigfox-tech-radio/sigfox-ep-rf-api-st-s2lp/releases/tag/v2.0) | >= [v3.5](https://github.com/sigfox-tech-radio/sigfox-ep-lib/releases/tag/v3.5) |
 | [v1.3](https://github.com/sigfox-tech-radio/sigfox-ep-rf-api-st-s2lp/releases/tag/v1.3) | [v3.4](https://github.com/sigfox-tech-radio/sigfox-ep-lib/releases/tag/v3.4) |
 | [v1.2](https://github.com/sigfox-tech-radio/sigfox-ep-rf-api-st-s2lp/releases/tag/v1.2) | [v3.2](https://github.com/sigfox-tech-radio/sigfox-ep-lib/releases/tag/v3.2) to [v3.3](https://github.com/sigfox-tech-radio/sigfox-ep-lib/releases/tag/v3.3) |
@@ -33,9 +34,9 @@ The `LOW_LEVEL_OPEN_CLOSE` flag must be enabled to use this example.
 
 ### Dependencies
 
-The **S2LP RF API** is based on the [official S2LP driver](https://github.com/STMicroelectronics/x-cube-sfxs2lp1/tree/main/Drivers/BSP/Components/S2LP/S2LP_Library) from ST-Microelectronics. This driver exposes a functional interface to configure the chip registers, which is used to perform the Sigfox uplink modulation and optional downlink reception. It relies on **low level functions** (called board drivers) which need to be implemented to run on your specific hardware. There are divided in 2 groups:
+The **S2LP RF API** is based on the [official S2LP driver](https://github.com/STMicroelectronics/x-cube-subg2/tree/main/Drivers/BSP/Components/S2LP/S2LP_Library) from ST-Microelectronics. This driver exposes a functional interface to configure the chip registers, which is used to perform the Sigfox uplink modulation and optional downlink reception. It relies on **low level functions** (called board drivers) which need to be implemented to run on your specific hardware. There are divided in 2 groups:
 
-* **MCU_Interface_template** : low level functions of the S2LP driver from ST (registers access through SPI and shutdown pin management).
+* **S2LP_CORE_SPI** : low level SPI access functions of the S2LP driver from ST.
 * **S2LP_HW_API** : additional hardware dependent functions required to get a generic RF API implementation of the S2LP.
 
 The templates are located in the `src/board` folder.

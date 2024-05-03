@@ -82,6 +82,24 @@ S2LP_HW_API_status_t S2LP_HW_API_de_init(void) {
 }
 
 /*******************************************************************/
+S2LP_HW_API_status_t S2LP_HW_API_enter_shutdown(void) {
+	/* To be implemented by the device manufacturer */
+#ifdef ERROR_CODES
+	S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
+#endif
+	RETURN();
+}
+
+/*******************************************************************/
+S2LP_HW_API_status_t S2LP_HW_API_exit_shutdown(void) {
+	/* To be implemented by the device manufacturer */
+#ifdef ERROR_CODES
+	S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
+#endif
+	RETURN();
+}
+
+/*******************************************************************/
 S2LP_HW_API_status_t S2LP_HW_API_get_oscillator(S2LP_HW_API_oscillator_type_t *xo_type, sfx_u32 *xo_frequency_hz) {
 	/* To be implemented by the device manufacturer */
 #ifdef ERROR_CODES

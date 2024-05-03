@@ -15,18 +15,19 @@ endif()
 
 set (S2LP_RF_API_SOURCES
     src/manuf/s2lp_rf_api.c
-    src/board/s2lp_hw_api.c
 )
 
 set (S2LP_RF_API_HEADERS
     inc/manuf/s2lp_rf_api.h
     inc/board/s2lp_hw_api.h
+    inc/board/S2LP_CORE_SPI.h
 )
 
 set( CHIP_RF_HEADERS_LIST "")
 
 if (NOT TARGET s2lp_driver)
     list(APPEND CHIP_RF_HEADERS_LIST  ${CMAKE_CURRENT_BINARY_DIR}/drivers-src/s2lp/Drivers/BSP/Components/S2LP/S2LP_Library/inc/)
+    list(APPEND CHIP_RF_HEADERS_LIST  ${CMAKE_CURRENT_SOURCE_DIR}/inc/board/)
     ExternalProject_Add(s2lp
         PREFIX drivers-build
         CONFIGURE_COMMAND ""
@@ -37,9 +38,8 @@ if (NOT TARGET s2lp_driver)
         SOURCE_DIR drivers-src/s2lp
         GIT_PROGRESS TRUE
         GIT_SHALLOW TRUE
-        GIT_REPOSITORY    https://github.com/STMicroelectronics/x-cube-sfxs2lp1.git
-        GIT_TAG           v4.0.0
-        PATCH_COMMAND git apply ${CMAKE_CURRENT_LIST_DIR}/cmake/s2lp.patch
+        GIT_REPOSITORY    https://github.com/STMicroelectronics/x-cube-subg2.git
+        GIT_TAG           v5.0.0
     )
 else ()
     list(APPEND CHIP_RF_HEADERS_LIST "$<BUILD_INTERFACE:$<TARGET_PROPERTY:s2lp_driver,INTERFACE_INCLUDE_DIRECTORIES>>")

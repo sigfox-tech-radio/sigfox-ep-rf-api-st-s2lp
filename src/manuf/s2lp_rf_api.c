@@ -45,7 +45,6 @@
 #include "manuf/mcu_api.h"
 #include "manuf/rf_api.h"
 // S2LP library.
-#include "MCU_Interface_template.h"
 #include "S2LP_Commands.h"
 #include "S2LP_Fifo.h"
 #include "S2LP_General.h"
@@ -56,6 +55,7 @@
 #include "S2LP_Regs.h"
 #include "S2LP_Timer.h"
 // S2LP hardware driver.
+#include "board/S2LP_CORE_SPI.h"
 #include "board/s2lp_hw_api.h"
 
 /*** S2LP RF API local macros ***/
@@ -142,7 +142,7 @@ typedef struct {
 /*** S2LP RF API local global variables ***/
 
 #ifdef VERBOSE
-static const sfx_u8 S2LP_RF_API_VERSION[] = "v2.0";
+static const sfx_u8 S2LP_RF_API_VERSION[] = "v3.0";
 #endif
 // Amplitude profile tables for ramp and bit 0 transmission at maximum output power.
 static const sfx_u8 S2LP_RF_API_RAMP_AMPLITUDE_PROFILE[S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 5, 7, 10, 14, 19, 25, 31, 39, 60, 220};
@@ -170,6 +170,9 @@ static sfx_u32 S2LP_RF_API_LATENCY_MS[RF_API_LATENCY_LAST] = {
 static S2LP_RF_API_context_t s2lp_rf_api_ctx;
 
 /*** S2LP RF API local functions ***/
+
+/*******************************************************************/
+#define FEM_Operation(x) { }
 
 /*******************************************************************/
 static void _s2lp_gpio_irq_callback(void) {
@@ -291,7 +294,7 @@ static RF_API_status_t _s2lp_internal_process(void) {
 		}
 		// Load ramp-up buffer into FIFO.
 		S2LPCmdStrobeFlushTxFifo();
-		SdkEvalSpiWriteFifo(S2LP_RF_API_SYMBOL_FIFO_BUFFER_SIZE_BYTES, (sfx_u8*) s2lp_rf_api_ctx.ramp_fifo_buffer);
+		S2LPSpiWriteFifo(S2LP_RF_API_SYMBOL_FIFO_BUFFER_SIZE_BYTES, (sfx_u8*) s2lp_rf_api_ctx.ramp_fifo_buffer);
 		// Enable external GPIO interrupt.
 		S2LPGpioIrqClearStatus();
 		s2lp_rf_api_ctx.flags.field.gpio_irq_enable = 1;
@@ -323,7 +326,7 @@ static RF_API_status_t _s2lp_internal_process(void) {
 				}
 			}
 			// Load bit into FIFO.
-			SdkEvalSpiWriteFifo(S2LP_RF_API_SYMBOL_FIFO_BUFFER_SIZE_BYTES, (sfx_u8*) s2lp_rf_api_ctx.symbol_fifo_buffer);
+			S2LPSpiWriteFifo(S2LP_RF_API_SYMBOL_FIFO_BUFFER_SIZE_BYTES, (sfx_u8*) s2lp_rf_api_ctx.symbol_fifo_buffer);
 			// Increment bit index..
 			s2lp_rf_api_ctx.tx_bit_idx++;
 			if (s2lp_rf_api_ctx.tx_bit_idx >= 8) {
@@ -349,7 +352,7 @@ static RF_API_status_t _s2lp_internal_process(void) {
 				s2lp_rf_api_ctx.ramp_fifo_buffer[(2 * idx) + 1] = s2lp_rf_api_ctx.tx_ramp_amplitude_profile[idx]; // PA output power for ramp-down.
 			}
 			// Load ramp-down buffer into FIFO.
-			SdkEvalSpiWriteFifo(S2LP_RF_API_SYMBOL_FIFO_BUFFER_SIZE_BYTES, (sfx_u8*) s2lp_rf_api_ctx.ramp_fifo_buffer);
+			S2LPSpiWriteFifo(S2LP_RF_API_SYMBOL_FIFO_BUFFER_SIZE_BYTES, (sfx_u8*) s2lp_rf_api_ctx.ramp_fifo_buffer);
 			// Update state.
 			s2lp_rf_api_ctx.state = S2LP_RF_API_STATE_TX_PADDING_BIT;
 			// Clear flag.
@@ -364,7 +367,7 @@ static RF_API_status_t _s2lp_internal_process(void) {
 				s2lp_rf_api_ctx.symbol_fifo_buffer[idx] = 0x00;
 			}
 			// Load padding buffer into FIFO.
-			SdkEvalSpiWriteFifo(S2LP_RF_API_SYMBOL_FIFO_BUFFER_SIZE_BYTES, (sfx_u8*) s2lp_rf_api_ctx.symbol_fifo_buffer);
+			S2LPSpiWriteFifo(S2LP_RF_API_SYMBOL_FIFO_BUFFER_SIZE_BYTES, (sfx_u8*) s2lp_rf_api_ctx.symbol_fifo_buffer);
 			// Update state.
 			s2lp_rf_api_ctx.state = S2LP_RF_API_STATE_TX_END;
 			// Clear flag.
@@ -405,7 +408,7 @@ static RF_API_status_t _s2lp_internal_process(void) {
 		// Check RX data flag.
 		if (S2LPGpioIrqCheckFlag(RX_DATA_READY) != 0) {
 			// Read FIFO and RSSI.
-			SdkEvalSpiReadFifo(SIGFOX_DL_PHY_CONTENT_SIZE_BYTES, (sfx_u8*) s2lp_rf_api_ctx.dl_phy_content);
+			S2LPSpiReadFifo(SIGFOX_DL_PHY_CONTENT_SIZE_BYTES, (sfx_u8*) s2lp_rf_api_ctx.dl_phy_content);
 			s2lp_rf_api_ctx.dl_rssi_dbm = (sfx_s16) S2LPRadioGetRssidBm();
 			// Stop radio.
 			S2LPCmdStrobeSabort();
@@ -459,7 +462,6 @@ RF_API_status_t S2LP_RF_API_open(RF_API_config_t *rf_api_config) {
 #else
 	S2LP_HW_API_open(&s1lp_hw_api_config);
 #endif
-	SdkEvalSpiInit();
 #ifdef ERROR_CODES
 errors:
 #endif
@@ -478,7 +480,6 @@ RF_API_status_t S2LP_RF_API_close(void) {
 	// Reset context.
 	_s2lp_reset_context();
 	// De-init board.
-	SdkEvalSpiDeinit();
 #ifdef ERROR_CODES
 	s2lp_hw_api_status = S2LP_HW_API_close();
 	S2LP_HW_API_check_status((RF_API_status_t) S2LP_RF_API_ERROR_DRIVER_S2LP_HW_API);
@@ -520,13 +521,22 @@ RF_API_status_t S2LP_RF_API_wake_up(void) {
 #ifdef ERROR_CODES
 	// Local variables.
 	RF_API_status_t status = RF_API_SUCCESS;
+	S2LP_HW_API_status_t s2lp_hw_api_status = S2LP_HW_API_SUCCESS;
 #endif
 	// Exit shutdown.
-	SdkEvalExitShutdown();
+#ifdef ERROR_CODES
+	s2lp_hw_api_status = S2LP_HW_API_exit_shutdown();
+	S2LP_HW_API_check_status((RF_API_status_t) S2LP_RF_API_ERROR_DRIVER_S2LP_HW_API);
+#else
+	S2LP_HW_API_exit_shutdown();
+#endif
 	// Enter standby state.
 	S2LPCmdStrobeSres();
 	S2LPCmdStrobeStandby();
 	_s2lp_wait_for_state_switch(MC_STATE_STANDBY);
+#ifdef ERROR_CODES
+errors:
+#endif
 	RETURN();
 }
 
@@ -535,9 +545,18 @@ RF_API_status_t S2LP_RF_API_sleep(void) {
 #ifdef ERROR_CODES
 	// Local variables.
 	RF_API_status_t status = RF_API_SUCCESS;
+	S2LP_HW_API_status_t s2lp_hw_api_status = S2LP_HW_API_SUCCESS;
 #endif
 	// Enter shutdown.
-	SdkEvalEnterShutdown();
+#ifdef ERROR_CODES
+	s2lp_hw_api_status = S2LP_HW_API_enter_shutdown();
+	S2LP_HW_API_check_status((RF_API_status_t) S2LP_RF_API_ERROR_DRIVER_S2LP_HW_API);
+#else
+	S2LP_HW_API_enter_shutdown();
+#endif
+#ifdef ERROR_CODES
+errors:
+#endif
 	RETURN();
 }
 
@@ -641,11 +660,11 @@ RF_API_status_t S2LP_RF_API_init(RF_API_radio_parameters_t *radio_parameters) {
 		S2LPFifoSetAlmostEmptyThresholdTx(S2LP_RF_API_FIFO_TX_ALMOST_EMPTY_THRESHOLD);
 		// PA configuration.
 		reg_value = 0x00; // Disable all features and select slot 0.
-		SdkEvalSpiWriteRegisters(PA_POWER0_ADDR, 1, &reg_value);
+		S2LPSpiWriteRegisters(PA_POWER0_ADDR, 1, &reg_value);
 		S2LPRadioSetAutoRampingMode(S_DISABLE);
-		SdkEvalSpiReadRegisters(MOD1_ADDR, 1, &reg_value);
+		S2LPSpiReadRegisters(MOD1_ADDR, 1, &reg_value);
 		reg_value |= PA_INTERP_EN_REGMASK; // Enable interpolator.
-		SdkEvalSpiWriteRegisters(MOD1_ADDR, 1, &reg_value);
+		S2LPSpiWriteRegisters(MOD1_ADDR, 1, &reg_value);
 		// Get effective output power to program.
 #ifdef TX_POWER_DBM_EIRP
 		expected_tx_power_dbm = TX_POWER_DBM_EIRP;
@@ -954,6 +973,8 @@ RF_API_status_t S2LP_RF_API_get_latency(RF_API_latency_t latency_type, sfx_u32 *
     (*latency_ms) = S2LP_RF_API_LATENCY_MS[latency_type];
     // Read hardware latencies.
     for (idx=0 ; idx<S2LP_HW_API_LATENCY_LAST ; idx++) {
+        // Reset value.
+        hw_api_latency[idx] = 0;
 #ifdef ERROR_CODES
     	s2lp_hw_api_status = S2LP_HW_API_get_latency(idx, &(hw_api_latency[idx]));
     	S2LP_HW_API_check_status((RF_API_status_t) S2LP_RF_API_ERROR_DRIVER_S2LP_HW_API);

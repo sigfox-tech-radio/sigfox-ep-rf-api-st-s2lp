@@ -7,6 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v3.0](https://github.com/sigfox-tech-radio/sigfox-ep-rf-api-st-s2lp/releases/tag/v3.0) - 03 May 2024
+
+### Added
+
+* Add HW API functions to **enter and exit shutdown mode** with SDN pin.
+
+### Fixed
+
+* Reset **hardware latencies** to 0 before calling HW API function.
+
+### Changed
+
+* Update **S2LP library** from newer `x-cube-subg2` GitHub repository.
+* Use `S2LP_CORE_SPI.h` header instead of `MCU_Interface_template.h` to define SPI access functions.
+
+### Removed
+
+* Remove `s2lp.patch` file since ST driver is now called as it is.
+
+### Known limitations
+
+* **LBT** not implemented.
+* **Modulated CW** not supported for type approval addon.
+
 ## [v2.0](https://github.com/sigfox-tech-radio/sigfox-ep-rf-api-st-s2lp/releases/tag/v2.0) - 22 Mar 2024
 
 ### Added

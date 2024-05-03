@@ -177,6 +177,24 @@ S2LP_HW_API_status_t S2LP_HW_API_init(S2LP_radio_parameters_t *radio_parameters)
 S2LP_HW_API_status_t S2LP_HW_API_de_init(void);
 
 /*!******************************************************************
+ * \fn S2LP_HW_API_status_t S2LP_HW_API_enter_shutdown(void)
+ * \brief Put S2LP in shutdown mode.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		Function execution status.
+ *******************************************************************/
+S2LP_HW_API_status_t S2LP_HW_API_enter_shutdown(void);
+
+/*!******************************************************************
+ * \fn S2LP_HW_API_status_t S2LP_HW_API_exit_shutdown(void)
+ * \brief Put S2LP in active mode.
+ * \param[in]  	none
+ * \param[out] 	none
+ * \retval		Function execution status.
+ *******************************************************************/
+S2LP_HW_API_status_t S2LP_HW_API_exit_shutdown(void);
+
+/*!******************************************************************
  * \fn S2LP_HW_API_status_t S2LP_HW_API_get_oscillator(S2LP_HW_API_oscillator_type_t *xo_type, sfx_u32 *xo_frequency_hz)
  * \brief Returns the crystal oscillator parameters attached to the S2LP.
  * \param[in]  	none
