@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v3.1](https://github.com/sigfox-tech-radio/sigfox-ep-rf-api-st-s2lp/releases/tag/v3.1) - 30 May 2024
+
+### Added
+
+* Add weak attribute to functions templates.
+* Add **SFX_UNUSED** macro to remove extra warnings.
+
 ## [v3.0](https://github.com/sigfox-tech-radio/sigfox-ep-rf-api-st-s2lp/releases/tag/v3.0) - 03 May 2024
 
 ### Added

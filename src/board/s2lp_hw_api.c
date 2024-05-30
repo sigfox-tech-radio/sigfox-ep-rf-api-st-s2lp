@@ -46,7 +46,17 @@
 /*** S2LP HW API functions ***/
 
 /*******************************************************************/
-S2LP_HW_API_status_t S2LP_HW_API_open(S2LP_HW_API_config_t* hw_api_config) {
+S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_open(S2LP_HW_API_config_t* hw_api_config) {
+	/* To be implemented by the device manufacturer */
+#ifdef ERROR_CODES
+	S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
+#endif
+	SFX_UNUSED(hw_api_config);
+	RETURN();
+}
+
+/*******************************************************************/
+S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_close(void) {
 	/* To be implemented by the device manufacturer */
 #ifdef ERROR_CODES
 	S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
@@ -55,7 +65,17 @@ S2LP_HW_API_status_t S2LP_HW_API_open(S2LP_HW_API_config_t* hw_api_config) {
 }
 
 /*******************************************************************/
-S2LP_HW_API_status_t S2LP_HW_API_close(void) {
+S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_init(S2LP_radio_parameters_t *radio_parameters) {
+	/* To be implemented by the device manufacturer */
+#ifdef ERROR_CODES
+	S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
+#endif
+	SFX_UNUSED(radio_parameters);
+	RETURN();
+}
+
+/*******************************************************************/
+S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_de_init(void) {
 	/* To be implemented by the device manufacturer */
 #ifdef ERROR_CODES
 	S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
@@ -64,7 +84,7 @@ S2LP_HW_API_status_t S2LP_HW_API_close(void) {
 }
 
 /*******************************************************************/
-S2LP_HW_API_status_t S2LP_HW_API_init(S2LP_radio_parameters_t *radio_parameters) {
+S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_enter_shutdown(void) {
 	/* To be implemented by the device manufacturer */
 #ifdef ERROR_CODES
 	S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
@@ -73,7 +93,7 @@ S2LP_HW_API_status_t S2LP_HW_API_init(S2LP_radio_parameters_t *radio_parameters)
 }
 
 /*******************************************************************/
-S2LP_HW_API_status_t S2LP_HW_API_de_init(void) {
+S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_exit_shutdown(void) {
 	/* To be implemented by the device manufacturer */
 #ifdef ERROR_CODES
 	S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
@@ -82,57 +102,47 @@ S2LP_HW_API_status_t S2LP_HW_API_de_init(void) {
 }
 
 /*******************************************************************/
-S2LP_HW_API_status_t S2LP_HW_API_enter_shutdown(void) {
+S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_get_oscillator(S2LP_HW_API_oscillator_type_t *xo_type, sfx_u32 *xo_frequency_hz) {
 	/* To be implemented by the device manufacturer */
 #ifdef ERROR_CODES
 	S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
 #endif
+	SFX_UNUSED(xo_type);
+	SFX_UNUSED(xo_frequency_hz);
 	RETURN();
 }
 
 /*******************************************************************/
-S2LP_HW_API_status_t S2LP_HW_API_exit_shutdown(void) {
+S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_get_gpio(S2LP_HW_API_signal_t signal, S2LP_HW_API_gpio_t *s2lp_gpio) {
 	/* To be implemented by the device manufacturer */
 #ifdef ERROR_CODES
 	S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
 #endif
+	SFX_UNUSED(signal);
+	SFX_UNUSED(s2lp_gpio);
 	RETURN();
 }
 
 /*******************************************************************/
-S2LP_HW_API_status_t S2LP_HW_API_get_oscillator(S2LP_HW_API_oscillator_type_t *xo_type, sfx_u32 *xo_frequency_hz) {
+S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_get_tx_power(sfx_s8 expected_tx_power_dbm, sfx_s8 *s2lp_tx_power_dbm) {
 	/* To be implemented by the device manufacturer */
 #ifdef ERROR_CODES
 	S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
 #endif
-	RETURN();
-}
-
-/*******************************************************************/
-S2LP_HW_API_status_t S2LP_HW_API_get_gpio(S2LP_HW_API_signal_t signal, S2LP_HW_API_gpio_t *s2lp_gpio) {
-	/* To be implemented by the device manufacturer */
-#ifdef ERROR_CODES
-	S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
-#endif
-	RETURN();
-}
-
-/*******************************************************************/
-S2LP_HW_API_status_t S2LP_HW_API_get_tx_power(sfx_s8 expected_tx_power_dbm, sfx_s8 *s2lp_tx_power_dbm) {
-	/* To be implemented by the device manufacturer */
-#ifdef ERROR_CODES
-	S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
-#endif
+	SFX_UNUSED(expected_tx_power_dbm);
+	SFX_UNUSED(s2lp_tx_power_dbm);
 	RETURN();
 }
 
 #if (defined TIMER_REQUIRED) && (defined LATENCY_COMPENSATION)
 /*******************************************************************/
-S2LP_HW_API_status_t S2LP_HW_API_get_latency(S2LP_HW_API_latency_t latency_type, sfx_u32 *latency_ms) {
+S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_get_latency(S2LP_HW_API_latency_t latency_type, sfx_u32 *latency_ms) {
 	/* To be implemented by the device manufacturer */
 #ifdef ERROR_CODES
 	S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
 #endif
+	SFX_UNUSED(latency_type);
+	SFX_UNUSED(latency_ms);
     RETURN();
 }
 #endif

@@ -142,7 +142,7 @@ typedef struct {
 /*** S2LP RF API local global variables ***/
 
 #ifdef VERBOSE
-static const sfx_u8 S2LP_RF_API_VERSION[] = "v3.0";
+static const sfx_u8 S2LP_RF_API_VERSION[] = "v3.1";
 #endif
 // Amplitude profile tables for ramp and bit 0 transmission at maximum output power.
 static const sfx_u8 S2LP_RF_API_RAMP_AMPLITUDE_PROFILE[S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES] = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 5, 7, 10, 14, 19, 25, 31, 39, 60, 220};
@@ -937,16 +937,8 @@ RF_API_status_t S2LP_RF_API_carrier_sense(RF_API_carrier_sense_parameters_t *car
 #ifdef ERROR_CODES
 	RF_API_status_t status = RF_API_SUCCESS;
 #endif
-#ifdef PARAMETERS_CHECK
-	// Check parameter.
-	if (carrier_sense_params == SFX_NULL) {
-		EXIT_ERROR((RF_API_status_t) S2LP_RF_API_ERROR_NULL_PARAMETER);
-	}
-#endif
 	/* To be implemented by the device manufacturer */
-#ifdef PARAMETERS_CHECK
-errors:
-#endif
+	SFX_UNUSED(carrier_sense_params);
 	RETURN();
 }
 #endif
