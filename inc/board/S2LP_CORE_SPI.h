@@ -44,50 +44,50 @@
 /*!******************************************************************
  * \fn sfx_u8 S2LPSpiWriteRegisters(sfx_u8 register_address, sfx_u8 data_size, sfx_u8* data)
  * \brief Write S2LP registers.
- * \param[in]  	register_address: Address of the register to write.
- * \param[in]	data_size: Number of bytes to write.
- * \param[in]	data: Input data to write.
- * \param[out] 	none
- * \retval		MC_STATE0 value.
+ * \param[in]   register_address: Address of the register to write.
+ * \param[in]   data_size: Number of bytes to write.
+ * \param[in]   data: Input data to write.
+ * \param[out]  none
+ * \retval      MC_STATE0 value.
  *******************************************************************/
-sfx_u8 S2LPSpiWriteRegisters(sfx_u8 register_address, sfx_u8 data_size, sfx_u8* data);
+sfx_u8 S2LPSpiWriteRegisters(sfx_u8 register_address, sfx_u8 data_size, sfx_u8 *data);
 
 /*!******************************************************************
  * \fn sfx_u8 S2LPSpiReadRegisters(sfx_u8 register_address, sfx_u8 data_size, sfx_u8* data)
  * \brief Read S2LP registers.
- * \param[in]  	register_address: Address of the register to read.
- * \param[in]	data_size: Number of bytes to read.
- * \param[out]	data: Pointer to the read data.
- * \retval		MC_STATE0 value.
+ * \param[in]   register_address: Address of the register to read.
+ * \param[in]   data_size: Number of bytes to read.
+ * \param[out]  data: Pointer to the read data.
+ * \retval      MC_STATE0 value.
  *******************************************************************/
-sfx_u8 S2LPSpiReadRegisters(sfx_u8 register_address, sfx_u8 data_size, sfx_u8* data);
+sfx_u8 S2LPSpiReadRegisters(sfx_u8 register_address, sfx_u8 data_size, sfx_u8 *data);
 
 /*!******************************************************************
  * \fn sfx_u8 S2LPSpiCommandStrobes(sfx_u8 command)
  * \brief Send a command strobe to S2LP.
- * \param[in]  	command: Command to send.
- * \param[out] 	none
- * \retval		MC_STATE0 value.
+ * \param[in]   command: Command to send.
+ * \param[out]  none
+ * \retval      MC_STATE0 value.
  *******************************************************************/
 sfx_u8 S2LPSpiCommandStrobes(sfx_u8 command);
 
 /*!******************************************************************
  * \fn sfx_u8 S2LPSpiWriteFifo(sfx_u8 data_size, sfx_u8* data)
  * \brief Write S2LP FIFO.
- * \param[in]	data_size: Number of bytes to write.
- * \param[in]	data: Input data to write.
- * \param[out] 	none
- * \retval		MC_STATE0 value.
+ * \param[in]   data_size: Number of bytes to write.
+ * \param[in]   data: Input data to write.
+ * \param[out]  none
+ * \retval      MC_STATE0 value.
  *******************************************************************/
-sfx_u8 S2LPSpiWriteFifo(sfx_u8 data_size, sfx_u8* data);
+sfx_u8 S2LPSpiWriteFifo(sfx_u8 data_size, sfx_u8 *data);
 
 /*!******************************************************************
  * \fn sfx_u8 S2LPSpiReadFifo(sfx_u8 data_size, sfx_u8* data)
  * \brief Read S2LP FIFO.
- * \param[in]	data_size: Number of bytes to read.
- * \param[out]	data: Pointer to the read data.
- * \retval		MC_STATE0 value.
+ * \param[in]   data_size: Number of bytes to read.
+ * \param[out]  data: Pointer to the read data.
+ * \retval      MC_STATE0 value.
  *******************************************************************/
-sfx_u8 S2LPSpiReadFifo(sfx_u8 data_size, sfx_u8* data);
+sfx_u8 S2LPSpiReadFifo(sfx_u8 data_size, sfx_u8 *data);
 
 #endif /* __S2LP_CORE_SPI_H__ */

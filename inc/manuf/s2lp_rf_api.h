@@ -33,11 +33,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  *******************************************************************/
- 
+
 #ifndef __S2LP_RF_API_H__
 #define __S2LP_RF_API_H__
 
-#ifdef USE_SIGFOX_EP_FLAGS_H
+#ifndef SIGFOX_EP_DISABLE_FLAGS_FILE
 #include "sigfox_ep_flags.h"
 #endif
 #include "sigfox_types.h"
@@ -45,55 +45,56 @@
 
 /*** S2LP RF API structures ***/
 
-#ifdef ERROR_CODES
+#ifdef SIGFOX_EP_ERROR_CODES
 /*!******************************************************************
  * \enum S2LP_RF_API_status_t
  * \brief S2LP RF driver error codes.
  *******************************************************************/
 typedef enum {
-	S2LP_RF_API_ERROR_NULL_PARAMETER = RF_API_ERROR_LAST,
-	S2LP_RF_API_ERROR_BUFFER_SIZE,
-	S2LP_RF_API_ERROR_MODE,
-	S2LP_RF_API_ERROR_FREQUENCY,
-	S2LP_RF_API_ERROR_MODULATION,
-	S2LP_RF_API_ERROR_GPIO,
-	S2LP_RF_API_ERROR_TX_POWER,
-	S2LP_RF_API_ERROR_LATENCY_TYPE,
-	S2LP_RF_API_ERROR_STATE,
-	// Low level errors.
-	// Activate the ERROR_STACK flag and use the SIGFOX_EP_API_unstack_error() function to get more details.
-	S2LP_RF_API_ERROR_DRIVER_MCU_API,
-	S2LP_RF_API_ERROR_DRIVER_S2LP_HW_API,
-	// Last index.
-	SIGFOX_RF_API_ERROR_LAST
+    S2LP_RF_API_ERROR_NULL_PARAMETER = RF_API_ERROR_LAST,
+    S2LP_RF_API_ERROR_STATE_SWITCH_TIMEOUT,
+    S2LP_RF_API_ERROR_BUFFER_SIZE,
+    S2LP_RF_API_ERROR_MODE,
+    S2LP_RF_API_ERROR_FREQUENCY,
+    S2LP_RF_API_ERROR_MODULATION,
+    S2LP_RF_API_ERROR_GPIO,
+    S2LP_RF_API_ERROR_TX_POWER,
+    S2LP_RF_API_ERROR_LATENCY_TYPE,
+    S2LP_RF_API_ERROR_STATE,
+    // Low level errors.
+    // Activate the SIGFOX_EP_ERROR_STACK flag and use the SIGFOX_EP_API_unstack_error() function to get more details.
+    S2LP_RF_API_ERROR_DRIVER_MCU_API,
+    S2LP_RF_API_ERROR_DRIVER_S2LP_HW_API,
+    // Last index.
+    SIGFOX_RF_API_ERROR_LAST
 } S2LP_RF_API_status_t;
 #endif
 
 /*** S2LP RF API functions ***/
 
-#if (defined ASYNCHRONOUS) || (defined LOW_LEVEL_OPEN_CLOSE)
+#if (defined SIGFOX_EP_ASYNCHRONOUS) || (defined SIGFOX_EP_LOW_LEVEL_OPEN_CLOSE)
 /*!******************************************************************
  * \fn RF_API_status_t S2LP_RF_API_open(RF_API_config_t *rf_api_config)
  * \brief Open the RF driver.
- * \param[in]  	rf_api_config: Pointer to the RF API configuration.
- * \param[out] 	none
- * \retval		Function execution status.
+ * \param[in]   rf_api_config: Pointer to the RF API configuration.
+ * \param[out]  none
+ * \retval      Function execution status.
  *******************************************************************/
 RF_API_status_t S2LP_RF_API_open(RF_API_config_t *rf_api_config);
 #endif
 
-#ifdef LOW_LEVEL_OPEN_CLOSE
+#ifdef SIGFOX_EP_LOW_LEVEL_OPEN_CLOSE
 /*!******************************************************************
  * \fn RF_API_status_t S2LP_RF_API_close(void)
  * \brief Close the RF driver.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		Function execution status.
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      Function execution status.
  *******************************************************************/
 RF_API_status_t S2LP_RF_API_close(void);
 #endif
 
-#ifdef ASYNCHRONOUS
+#ifdef SIGFOX_EP_ASYNCHRONOUS
 /*!******************************************************************
  * \fn RF_API_status_t S2LP_RF_API_process(void)
  * \brief Process RF driver, this function will be call by SIGFOX_EP_API_process just after the process_callback has been sent to process RF interruptions in main context.
@@ -107,36 +108,36 @@ RF_API_status_t S2LP_RF_API_process(void);
 /*!******************************************************************
  * \fn RF_API_status_t S2LP_RF_API_wake_up(void)
  * \brief Wake-up the radio before each overall TX or RX sequence.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		Function execution status.
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      Function execution status.
  *******************************************************************/
 RF_API_status_t S2LP_RF_API_wake_up(void);
 
 /*!******************************************************************
  * \fn RF_API_status_t S2LP_RF_API_sleep(void)
  * \brief Release the radio after each overall TX or RX sequence.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		Function execution status.
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      Function execution status.
  *******************************************************************/
 RF_API_status_t S2LP_RF_API_sleep(void);
 
 /*!******************************************************************
  * \fn RF_API_status_t S2LP_RF_API_init(RF_API_radio_parameters_t *radio_parameters)
  * \brief Initialize the radio operation before each individual frame transmission or reception.
- * \param[in]  	radio_parameters: Pointer to the radio parameters.
- * \param[out] 	none
- * \retval		Function execution status.
+ * \param[in]   radio_parameters: Pointer to the radio parameters.
+ * \param[out]  none
+ * \retval      Function execution status.
  *******************************************************************/
 RF_API_status_t S2LP_RF_API_init(RF_API_radio_parameters_t *radio_parameters);
 
 /*!******************************************************************
  * \fn RF_API_status_t S2LP_RF_API_de_init(void)
  * \brief Stop the radio operation after each individual frame transmission or reception.
- * \param[in]  	rf_mode: Radio mode.
- * \param[out] 	none
- * \retval		Function execution status.
+ * \param[in]   rf_mode: Radio mode.
+ * \param[out]  none
+ * \retval      Function execution status.
  *******************************************************************/
 RF_API_status_t S2LP_RF_API_de_init(void);
 
@@ -145,101 +146,102 @@ RF_API_status_t S2LP_RF_API_de_init(void);
  * \brief Sending a bitstream over the air.
  * \brief In blocking mode, this function blocks until the full bitstream is sent.
  * \brief In asynchronous, this function only starts the transmission. End of transmission should be notified through the cplt_cb() callback.
- * \param[in]	tx_data: Pointer to the TX parameters.
- * \param[out] 	none
- * \retval		Function execution status.
+ * \param[in]   tx_data: Pointer to the TX parameters.
+ * \param[out]  none
+ * \retval      Function execution status.
  *******************************************************************/
 RF_API_status_t S2LP_RF_API_send(RF_API_tx_data_t *tx_data);
 
-#ifdef BIDIRECTIONAL
+#ifdef SIGFOX_EP_BIDIRECTIONAL
 /*!******************************************************************
  * \fn RF_API_status_t S2LP_RF_API_receive(RF_API_rx_data_t *rx_data)
  * \brief Start downlink reception. Could be called multiple times if several downlink frames are received during the RX window.
  * \brief In blocking mode, this function blocks until a valid downlink data is received or the MCU_API_TIMER_2 has elapsed.
  * \brief In asynchronous mode, this function only starts the reception. Data reception should be notified through the rx_data_received() callback.
- * \param[in]	rx_data: Pointer to the RX parameters.
- * \retval		Function execution status.
+ * \param[in]   none
+ * \param[out]  rx_data: Pointer to the RX parameters.
+ * \retval      Function execution status.
  *******************************************************************/
 RF_API_status_t S2LP_RF_API_receive(RF_API_rx_data_t *rx_data);
 #endif
 
-#ifdef BIDIRECTIONAL
+#ifdef SIGFOX_EP_BIDIRECTIONAL
 /*!******************************************************************
  * \fn RF_API_status_t S2LP_RF_API_get_dl_phy_content_and_rssi(sfx_u8 *dl_phy_content, sfx_u8 dl_phy_content_size, sfx_s16 *dl_rssi_dbm)
  * \brief Read DL-PHY content and RSSI received by the radio.
- * \brief In blocking mode, this function will be called only if the data_received parameter of the RF_API_receive() function is returned with SFX_TRUE value.
+ * \brief In blocking mode, this function will be called only if the data_received parameter of the RF_API_receive() function is returned with SIGFOX_TRUE value.
  * \brief in asynchronous mode, this function will be called only if the data_received_cb callback is triggered during reception.
- * \param[in]	dl_phy_content_size: Number of bytes to copy in dl_phy_content.
- * \param[out]	dl_phy_content: Array to be filled with the received DL-PHY content.
- * \param[out]	dl_rssi_dbm: Pointer to 16-bits signed value to be filled with the DL RSSI in dBm.
- * \retval		Function execution status.
+ * \param[in]   dl_phy_content_size: Number of bytes to copy in dl_phy_content.
+ * \param[out]  dl_phy_content: Array to be filled with the received DL-PHY content.
+ * \param[out]  dl_rssi_dbm: Pointer to 16-bits signed value to be filled with the DL RSSI in dBm.
+ * \retval      Function execution status.
  *******************************************************************/
 RF_API_status_t S2LP_RF_API_get_dl_phy_content_and_rssi(sfx_u8 *dl_phy_content, sfx_u8 dl_phy_content_size, sfx_s16 *dl_rssi_dbm);
 #endif
 
-#if (defined REGULATORY) && (defined SPECTRUM_ACCESS_LBT)
+#if (defined SIGFOX_EP_REGULATORY) && (defined SIGFOX_EP_SPECTRUM_ACCESS_LBT)
 /*!******************************************************************
  * \fn RF_API_status_t S2LP_RF_API_carrier_sense(RF_API_carrier_sense_parameters_t *carrier_sense_params)
  * \brief In blocking mode, the function until the LBT condition is met or the MCU_API_TIMER_1 has elapsed.
  * \brief In asynchronous mode, this function only starts the carrier sense operation. Channel free event should be notified through the channel_free_cb() callback.
- * \param[in]	carrier_sense_params: Pointer to the carrier sense parameters.
- * \param[out] 	none
- * \retval		Function execution status.
+ * \param[in]   carrier_sense_params: Pointer to the carrier sense parameters.
+ * \param[out]  none
+ * \retval      Function execution status.
  *******************************************************************/
 RF_API_status_t S2LP_RF_API_carrier_sense(RF_API_carrier_sense_parameters_t *carrier_sense_params);
 #endif
 
-#if (defined TIMER_REQUIRED) && (defined LATENCY_COMPENSATION)
+#if (defined SIGFOX_EP_TIMER_REQUIRED) && (defined SIGFOX_EP_LATENCY_COMPENSATION)
 /*!******************************************************************
  * \fn RF_API_status_t S2LP_RF_API_get_latency(RF_API_latency_t latency_type, sfx_u32 *latency_ms)
  * \brief Read radio latency in milliseconds.
  * \brief This functions is called by the core library to compensate the durations in the MCU_API_timer_start() function.
- * \param[in]	latency_type: Type of latency to get.
- * \param[out] 	latency_ms: Pointer to integer that will contain the radio latency in milliseconds.
- * \retval		Function execution status.
+ * \param[in]   latency_type: Type of latency to get.
+ * \param[out]  latency_ms: Pointer to integer that will contain the radio latency in milliseconds.
+ * \retval      Function execution status.
  *******************************************************************/
 RF_API_status_t S2LP_RF_API_get_latency(RF_API_latency_t latency_type, sfx_u32 *latency_ms);
 #endif
 
-#ifdef CERTIFICATION
+#ifdef SIGFOX_EP_CERTIFICATION
 /*!******************************************************************
  * \fn RF_API_status_t S2LP_RF_API_start_continuous_wave(void)
  * \brief Start continuous wave transmission using radio parameters given in the RF_API_init() function.
  * \brief This function is only called by the type approval addon (EP-ADDON-TA). In asynchronous mode, it must not issue any completion callback.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		Function execution status.
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      Function execution status.
  *******************************************************************/
 RF_API_status_t S2LP_RF_API_start_continuous_wave(void);
 #endif
 
-#ifdef VERBOSE
+#ifdef SIGFOX_EP_VERBOSE
 /*!******************************************************************
  * \fn RF_API_status_t S2LP_RF_API_get_version(sfx_u8 **version, sfx_u8 *version_size_char)
  * \brief Get RF driver version.
- * \param[in]  	none
- * \param[out] 	version: RF driver version.
- * \param[out]	version_size_char: Pointer that will contain the string size.
- * \retval		Function execution status.
+ * \param[in]   none
+ * \param[out]  version: RF driver version.
+ * \param[out]  version_size_char: Pointer that will contain the string size.
+ * \retval      Function execution status.
  *******************************************************************/
 RF_API_status_t S2LP_RF_API_get_version(sfx_u8 **version, sfx_u8 *version_size_char);
 #endif
 
-#ifdef ERROR_CODES
+#ifdef SIGFOX_EP_ERROR_CODES
 /*!******************************************************************
  * \fn void S2LP_RF_API_error(void)
  * \brief Function called by the library if any error occurred during the processing.
- * \param[in]  	none
- * \param[out] 	none
- * \retval		none
+ * \param[in]   none
+ * \param[out]  none
+ * \retval      none
  *******************************************************************/
 void S2LP_RF_API_error(void);
 #endif
 
 /*** Unwanted flag combinations and values ***/
 
-#ifndef LOW_LEVEL_OPEN_CLOSE
-#error "S2LP RF API flags error: LOW_LEVEL_OPEN_CLOSE flag mandatory."
+#ifndef SIGFOX_EP_LOW_LEVEL_OPEN_CLOSE
+#error "S2LP RF API flags error: SIGFOX_EP_LOW_LEVEL_OPEN_CLOSE flag mandatory."
 #endif
 
 #endif /* __S2LP_RF_API_H__ */

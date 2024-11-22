@@ -41,42 +41,42 @@
 /*** S2LP CORE SPI functions ***/
 
 /*******************************************************************/
-sfx_u8 __attribute__((weak)) S2LPSpiWriteRegisters(sfx_u8 register_address, sfx_u8 data_size, sfx_u8* data) {
-	/* To be implemented by the device manufacturer */
-	SFX_UNUSED(register_address);
-	SFX_UNUSED(data_size);
-	SFX_UNUSED(data);
-	return 0;
+sfx_u8 __attribute__((weak)) S2LPSpiWriteRegisters(sfx_u8 register_address, sfx_u8 data_size, sfx_u8 *data) {
+    /* To be implemented by the device manufacturer */
+    SIGFOX_UNUSED(register_address);
+    SIGFOX_UNUSED(data_size);
+    SIGFOX_UNUSED(data);
+    return 0;
 }
 
 /*******************************************************************/
-sfx_u8 __attribute__((weak)) S2LPSpiReadRegisters(sfx_u8 register_address, sfx_u8 data_size, sfx_u8* data) {
-	/* To be implemented by the device manufacturer */
-	SFX_UNUSED(register_address);
-	SFX_UNUSED(data_size);
-	SFX_UNUSED(data);
-	return 0;
+sfx_u8 __attribute__((weak)) S2LPSpiReadRegisters(sfx_u8 register_address, sfx_u8 data_size, sfx_u8 *data) {
+    /* To be implemented by the device manufacturer */
+    SIGFOX_UNUSED(register_address);
+    SIGFOX_UNUSED(data_size);
+    SIGFOX_UNUSED(data);
+    return 0;
 }
 
 /*******************************************************************/
 sfx_u8 __attribute__((weak)) S2LPSpiCommandStrobes(sfx_u8 command) {
-	/* To be implemented by the device manufacturer */
-	SFX_UNUSED(command);
-	return 0;
+    /* To be implemented by the device manufacturer */
+    SIGFOX_UNUSED(command);
+    return 0;
 }
 
 /*******************************************************************/
-sfx_u8 __attribute__((weak)) S2LPSpiWriteFifo(sfx_u8 data_size, sfx_u8* data) {
-	/* To be implemented by the device manufacturer */
-	SFX_UNUSED(data_size);
-	SFX_UNUSED(data);
-	return 0;
+sfx_u8 __attribute__((weak)) S2LPSpiWriteFifo(sfx_u8 data_size, sfx_u8 *data) {
+    /* To be implemented by the device manufacturer */
+    SIGFOX_UNUSED(data_size);
+    SIGFOX_UNUSED(data);
+    return 0;
 }
 
 /*******************************************************************/
-sfx_u8 __attribute__((weak)) S2LPSpiReadFifo(sfx_u8 data_size, sfx_u8* data) {
-	/* To be implemented by the device manufacturer */
-	SFX_UNUSED(data_size);
-	SFX_UNUSED(data);
-	return 0;
+sfx_u8 __attribute__((weak)) S2LPSpiReadFifo(sfx_u8 data_size, sfx_u8 *data) {
+    /* To be implemented by the device manufacturer */
+    SIGFOX_UNUSED(data_size);
+    SIGFOX_UNUSED(data);
+    return 0;
 }
