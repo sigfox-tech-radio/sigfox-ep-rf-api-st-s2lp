@@ -7,12 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v4.0](https://github.com/sigfox-tech-radio/sigfox-ep-rf-api-st-s2lp/releases/tag/v4.0) - 22 Nov 2024
+
+### Added
+
+* Add **timeout handling** in S2LP state switching function.
+
+### Fixed
+
+* Perform chip configuration in `READY` state instead of `STANDBY` to **relax SPI timings constraint** during registers programming.
+* Remove **unifdef dependency** in all cmake with linked target.
+
+### Changed
+
+* Upgrade to **sigfox-ep-lib v4.0**.
+* Add **radio configuration pointer** in HW API open function to manage multi-RC front-ends.
+* Adjust **radio latencies** to add more margin regarding timings specification.
+
+### Known limitations
+
+* **LBT** not implemented.
+* **Modulated CW** not supported for type approval addon.
+
 ## [v3.1](https://github.com/sigfox-tech-radio/sigfox-ep-rf-api-st-s2lp/releases/tag/v3.1) - 30 May 2024
 
 ### Added
 
-* Add weak attribute to functions templates.
+* Add `weak` attribute to functions templates.
 * Add **SFX_UNUSED** macro to remove extra warnings.
+
+### Known limitations
+
+* **LBT** not implemented.
+* **Modulated CW** not supported for type approval addon.
 
 ## [v3.0](https://github.com/sigfox-tech-radio/sigfox-ep-rf-api-st-s2lp/releases/tag/v3.0) - 03 May 2024
 
@@ -53,7 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 * Improve **HW API interface** to support external radio front-end.
 * Remove `inline` keyword on RF API **functions redirection**.
-* Rename `RCx` compilation flags into `RCx_ZONE` for **Microchip MCUs compatibility**.
+* Rename `RCx` compilation flags to `RCx_ZONE` for **Microchip MCUs compatibility**.
 
 ### Known limitations
 
