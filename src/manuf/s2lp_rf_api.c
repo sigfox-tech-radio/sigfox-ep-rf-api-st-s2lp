@@ -66,16 +66,16 @@
 #define S2LP_RF_API_TX_POWER_MAX_DBM                14
 
 #define S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES       40
-#define S2LP_RF_API_SYMBOL_FIFO_BUFFER_SIZE_BYTES   (2 * S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES) // Size is twice to store PA and FDEV values.
+#define S2LP_RF_API_SYMBOL_FIFO_BUFFER_SIZE_BYTES   (S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES << 1) // Size is twice to store PA and FDEV values.
 
 #define S2LP_RF_API_POLAR_DATARATE_MULTIPLIER       8
 
 #define S2LP_RF_API_FDEV_NEGATIVE                   0x7F // FDEV * (+1)
 #define S2LP_RF_API_FDEV_POSITIVE                   0x81 // FDEV * (-1)
 
-#define S2LP_RF_API_FIFO_BUFFER_FDEV_IDX            (S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES / 2) // Index where deviation is performed to invert phase.
+#define S2LP_RF_API_FIFO_BUFFER_FDEV_IDX            (S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES >> 1) // Index where deviation is performed to invert phase.
 
-#define S2LP_RF_API_FIFO_TX_ALMOST_EMPTY_THRESHOLD  (S2LP_RF_API_SYMBOL_FIFO_BUFFER_SIZE_BYTES / 2) // Threshold set to the middle of a symbol.
+#define S2LP_RF_API_FIFO_TX_ALMOST_EMPTY_THRESHOLD  (S2LP_RF_API_SYMBOL_FIFO_BUFFER_SIZE_BYTES >> 1) // Threshold set to the middle of a symbol.
 
 #ifdef SIGFOX_EP_BIDIRECTIONAL
 #define S2LP_RF_API_DL_PR_SIZE_BITS                 36
@@ -146,7 +146,7 @@ typedef struct {
 /*** S2LP RF API local global variables ***/
 
 #ifdef SIGFOX_EP_VERBOSE
-static const sfx_u8 S2LP_RF_API_VERSION[] = "v4.0";
+static const sfx_u8 S2LP_RF_API_VERSION[] = "v4.1";
 #endif
 // Amplitude profile tables for ramp and bit 0 transmission at maximum output power.
 static const sfx_u8 S2LP_RF_API_RAMP_AMPLITUDE_PROFILE[S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 3, 3, 5, 7, 10, 14, 19, 25, 31, 39, 60, 220 };
@@ -211,7 +211,7 @@ static void _s2lp_reset_context(void) {
     // Build synchronization word in integer format (0xB2270000).
     s2lp_rf_api_ctx.sync_word_u32 = 0;
     for (idx = 0; idx < SIGFOX_DL_FT_SIZE_BYTES; idx++) {
-        s2lp_rf_api_ctx.sync_word_u32 |= S2LP_RF_API_SIGFOX_DL_FT[idx] << (8 * (3 - idx));
+        s2lp_rf_api_ctx.sync_word_u32 |= S2LP_RF_API_SIGFOX_DL_FT[idx] << ((3 - idx) << 3);
     }
 #endif
 }
@@ -276,17 +276,17 @@ static void _s2lp_compute_amplitude_tables(sfx_s8 s2lp_tx_power_dbm) {
     }
     else {
         if (s2lp_tx_power_dbm >= 11) {
-            new_pa_value_max = (15 - s2lp_tx_power_dbm);
+            new_pa_value_max = (sfx_u8) (15 - s2lp_tx_power_dbm);
         }
         else {
-            new_pa_value_max = (25 - (2 * s2lp_tx_power_dbm));
+            new_pa_value_max = (sfx_u8) (25 - (s2lp_tx_power_dbm << 1));
         }
     }
     // Sub-symbols loop.
     for (idx = 0; idx < S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES; idx++) {
         // Compute amplitude tables.
-        s2lp_rf_api_ctx.tx_ramp_amplitude_profile[idx] = pa_value_min - ((pa_value_min - S2LP_RF_API_RAMP_AMPLITUDE_PROFILE[idx]) * (pa_value_min - new_pa_value_max)) / (pa_value_min - pa_value_max);
-        s2lp_rf_api_ctx.tx_bit0_amplitude_profile[idx] = pa_value_min - ((pa_value_min - S2LP_RF_API_BIT0_AMPLITUDE_PROFILE[idx]) * (pa_value_min - new_pa_value_max)) / (pa_value_min - pa_value_max);
+        s2lp_rf_api_ctx.tx_ramp_amplitude_profile[idx] = (sfx_u8) (pa_value_min - ((pa_value_min - S2LP_RF_API_RAMP_AMPLITUDE_PROFILE[idx]) * (pa_value_min - new_pa_value_max)) / (pa_value_min - pa_value_max));
+        s2lp_rf_api_ctx.tx_bit0_amplitude_profile[idx] = (sfx_u8) (pa_value_min - ((pa_value_min - S2LP_RF_API_BIT0_AMPLITUDE_PROFILE[idx]) * (pa_value_min - new_pa_value_max)) / (pa_value_min - pa_value_max));
     }
 }
 
@@ -305,8 +305,8 @@ static RF_API_status_t _s2lp_internal_process(void) {
     case S2LP_RF_API_STATE_TX_RAMP_UP:
         // Fill ramp-up.
         for (idx = 0; idx < S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES; idx++) {
-            s2lp_rf_api_ctx.ramp_fifo_buffer[(2 * idx)] = 0; // Deviation.
-            s2lp_rf_api_ctx.ramp_fifo_buffer[(2 * idx) + 1] = s2lp_rf_api_ctx.tx_ramp_amplitude_profile[S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES - idx - 1]; // PA output power.
+            s2lp_rf_api_ctx.ramp_fifo_buffer[(idx << 1) + 0] = 0; // Deviation.
+            s2lp_rf_api_ctx.ramp_fifo_buffer[(idx << 1) + 1] = s2lp_rf_api_ctx.tx_ramp_amplitude_profile[S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES - idx - 1]; // PA output power.
         }
         // Load ramp-up buffer into FIFO.
         S2LPCmdStrobeFlushTxFifo();
@@ -340,15 +340,15 @@ static RF_API_status_t _s2lp_internal_process(void) {
                 // Phase shift and amplitude shaping required.
                 s2lp_rf_api_ctx.tx_fdev = (s2lp_rf_api_ctx.tx_fdev == S2LP_RF_API_FDEV_NEGATIVE) ? S2LP_RF_API_FDEV_POSITIVE : S2LP_RF_API_FDEV_NEGATIVE; // Toggle deviation.
                 for (idx = 0; idx < S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES; idx++) {
-                    s2lp_rf_api_ctx.symbol_fifo_buffer[(2 * idx)] = (idx == S2LP_RF_API_FIFO_BUFFER_FDEV_IDX) ? s2lp_rf_api_ctx.tx_fdev : 0; // Deviation.
-                    s2lp_rf_api_ctx.symbol_fifo_buffer[(2 * idx) + 1] = s2lp_rf_api_ctx.tx_bit0_amplitude_profile[idx]; // PA output power.
+                    s2lp_rf_api_ctx.symbol_fifo_buffer[(idx << 1) + 0] = (idx == S2LP_RF_API_FIFO_BUFFER_FDEV_IDX) ? s2lp_rf_api_ctx.tx_fdev : 0; // Deviation.
+                    s2lp_rf_api_ctx.symbol_fifo_buffer[(idx << 1) + 1] = s2lp_rf_api_ctx.tx_bit0_amplitude_profile[idx]; // PA output power.
                 }
             }
             else {
                 // Constant CW.
                 for (idx = 0; idx < S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES; idx++) {
-                    s2lp_rf_api_ctx.symbol_fifo_buffer[(2 * idx)] = 0; // Deviation.
-                    s2lp_rf_api_ctx.symbol_fifo_buffer[(2 * idx) + 1] = s2lp_rf_api_ctx.tx_bit0_amplitude_profile[0]; // PA output power.
+                    s2lp_rf_api_ctx.symbol_fifo_buffer[(idx << 1) + 0] = 0; // Deviation.
+                    s2lp_rf_api_ctx.symbol_fifo_buffer[(idx << 1) + 1] = s2lp_rf_api_ctx.tx_bit0_amplitude_profile[0]; // PA output power.
                 }
             }
             // Load bit into FIFO.
@@ -374,8 +374,8 @@ static RF_API_status_t _s2lp_internal_process(void) {
         if (S2LPGpioIrqCheckFlag(TX_FIFO_ALMOST_EMPTY) != 0) {
             // Fill ramp-down.
             for (idx = 0; idx < S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES; idx++) {
-                s2lp_rf_api_ctx.ramp_fifo_buffer[(2 * idx)] = 0; // FDEV.
-                s2lp_rf_api_ctx.ramp_fifo_buffer[(2 * idx) + 1] = s2lp_rf_api_ctx.tx_ramp_amplitude_profile[idx]; // PA output power for ramp-down.
+                s2lp_rf_api_ctx.ramp_fifo_buffer[(idx << 1) + 0] = 0; // FDEV.
+                s2lp_rf_api_ctx.ramp_fifo_buffer[(idx << 1) + 1] = s2lp_rf_api_ctx.tx_ramp_amplitude_profile[idx]; // PA output power for ramp-down.
             }
             // Load ramp-down buffer into FIFO.
             S2LPSpiWriteFifo(S2LP_RF_API_SYMBOL_FIFO_BUFFER_SIZE_BYTES, (sfx_u8*) s2lp_rf_api_ctx.ramp_fifo_buffer);
@@ -635,7 +635,7 @@ RF_API_status_t S2LP_RF_API_init(RF_API_radio_parameters_t *radio_parameters) {
     S2LP_HW_API_get_oscillator(&s2lp_xo_type, &s2lp_xo_frequency_hz);
 #endif
     s2lp_ref_mode = (s2lp_xo_type == S2LP_HW_API_OSCILLATOR_TYPE_QUARTZ) ? MODE_EXT_XO : MODE_EXT_XIN;
-    S2LPRadioSetXtalFrequency(s2lp_xo_frequency_hz);
+    S2LPRadioSetXtalFrequency((uint32_t) s2lp_xo_frequency_hz);
     S2LPGeneralSetExtRef(s2lp_ref_mode);
     S2LPRadioSetDigDiv(S_ENABLE);
     S2LPTimerCalibrationRco(S_ENABLE);
@@ -645,7 +645,7 @@ RF_API_status_t S2LP_RF_API_init(RF_API_radio_parameters_t *radio_parameters) {
         SIGFOX_EXIT_ERROR((RF_API_status_t) S2LP_RF_API_ERROR_FREQUENCY);
     }
 #endif
-    s2lp_status = S2LPRadioSetFrequencyBase(radio_parameters->frequency_hz);
+    s2lp_status = S2LPRadioSetFrequencyBase((uint32_t) (radio_parameters->frequency_hz));
     if (s2lp_status != 0) SIGFOX_EXIT_ERROR((RF_API_status_t) S2LP_RF_API_ERROR_FREQUENCY);
     // Modulation and bit rate.
     switch (radio_parameters->modulation) {
@@ -659,7 +659,7 @@ RF_API_status_t S2LP_RF_API_init(RF_API_radio_parameters_t *radio_parameters) {
     case RF_API_MODULATION_DBPSK:
         s2lp_modulation = MOD_POLAR;
         s2lp_datarate = ((radio_parameters->bit_rate_bps) * S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES) / (S2LP_RF_API_POLAR_DATARATE_MULTIPLIER);
-        s2lp_deviation = ((radio_parameters->bit_rate_bps) * S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES) / (2);
+        s2lp_deviation = (sfx_u32) (((radio_parameters->bit_rate_bps) * S2LP_RF_API_SYMBOL_PROFILE_SIZE_BYTES) >> 1);
         break;
     case RF_API_MODULATION_GFSK:
         s2lp_modulation = MOD_2GFSK_BT1;
@@ -673,8 +673,8 @@ RF_API_status_t S2LP_RF_API_init(RF_API_radio_parameters_t *radio_parameters) {
         break;
     }
     S2LPRadioSetModulation(s2lp_modulation);
-    S2LPRadioSetDatarate(s2lp_datarate);
-    S2LPRadioSetFrequencyDev(s2lp_deviation);
+    S2LPRadioSetDatarate((uint32_t) s2lp_datarate);
+    S2LPRadioSetFrequencyDev((uint32_t) s2lp_deviation);
     // Disable all IRQ.
     S2LPGpioIrqDeInit(SIGFOX_NULL);
     // Configure IRQ GPIO.
@@ -755,8 +755,8 @@ RF_API_status_t S2LP_RF_API_init(RF_API_radio_parameters_t *radio_parameters) {
         S2LPRadioCsBlanking(S_DISABLE);
         // Downlink packet structure.
         downlink_pkt_init.xPreambleLength = S2LP_RF_API_DL_PR_SIZE_BITS;
-        downlink_pkt_init.xSyncLength = (SIGFOX_DL_FT_SIZE_BYTES * 8);
-        downlink_pkt_init.lSyncWords = s2lp_rf_api_ctx.sync_word_u32;
+        downlink_pkt_init.xSyncLength = (SIGFOX_DL_FT_SIZE_BYTES << 3);
+        downlink_pkt_init.lSyncWords = (uint32_t) (s2lp_rf_api_ctx.sync_word_u32);
         downlink_pkt_init.xFixVarLength = S_DISABLE;
         downlink_pkt_init.cExtendedPktLenField = S_DISABLE;
         downlink_pkt_init.xCrcMode = PKT_NO_CRC;

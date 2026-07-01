@@ -49,7 +49,7 @@
 S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_open(S2LP_HW_API_config_t *hw_api_config) {
     /* To be implemented by the device manufacturer */
 #ifdef SIGFOX_EP_ERROR_CODES
-    S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
+    S2LP_HW_API_status_t status = S2LP_HW_API_ERROR;
 #endif
     SIGFOX_UNUSED(hw_api_config);
     SIGFOX_RETURN();
@@ -59,7 +59,7 @@ S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_open(S2LP_HW_API_config_t
 S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_close(void) {
     /* To be implemented by the device manufacturer */
 #ifdef SIGFOX_EP_ERROR_CODES
-    S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
+    S2LP_HW_API_status_t status = S2LP_HW_API_ERROR;
 #endif
     SIGFOX_RETURN();
 }
@@ -68,7 +68,7 @@ S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_close(void) {
 S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_init(S2LP_radio_parameters_t *radio_parameters) {
     /* To be implemented by the device manufacturer */
 #ifdef SIGFOX_EP_ERROR_CODES
-    S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
+    S2LP_HW_API_status_t status = S2LP_HW_API_ERROR;
 #endif
     SIGFOX_UNUSED(radio_parameters);
     SIGFOX_RETURN();
@@ -78,7 +78,7 @@ S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_init(S2LP_radio_parameter
 S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_de_init(void) {
     /* To be implemented by the device manufacturer */
 #ifdef SIGFOX_EP_ERROR_CODES
-    S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
+    S2LP_HW_API_status_t status = S2LP_HW_API_ERROR;
 #endif
     SIGFOX_RETURN();
 }
@@ -87,7 +87,7 @@ S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_de_init(void) {
 S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_enter_shutdown(void) {
     /* To be implemented by the device manufacturer */
 #ifdef SIGFOX_EP_ERROR_CODES
-    S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
+    S2LP_HW_API_status_t status = S2LP_HW_API_ERROR;
 #endif
     SIGFOX_RETURN();
 }
@@ -96,7 +96,7 @@ S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_enter_shutdown(void) {
 S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_exit_shutdown(void) {
     /* To be implemented by the device manufacturer */
 #ifdef SIGFOX_EP_ERROR_CODES
-    S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
+    S2LP_HW_API_status_t status = S2LP_HW_API_ERROR;
 #endif
     SIGFOX_RETURN();
 }
@@ -105,7 +105,7 @@ S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_exit_shutdown(void) {
 S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_get_oscillator(S2LP_HW_API_oscillator_type_t *xo_type, sfx_u32 *xo_frequency_hz) {
     /* To be implemented by the device manufacturer */
 #ifdef SIGFOX_EP_ERROR_CODES
-    S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
+    S2LP_HW_API_status_t status = S2LP_HW_API_ERROR;
 #endif
     SIGFOX_UNUSED(xo_type);
     SIGFOX_UNUSED(xo_frequency_hz);
@@ -116,7 +116,7 @@ S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_get_oscillator(S2LP_HW_AP
 S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_get_gpio(S2LP_HW_API_signal_t signal, S2LP_HW_API_gpio_t *s2lp_gpio) {
     /* To be implemented by the device manufacturer */
 #ifdef SIGFOX_EP_ERROR_CODES
-    S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
+    S2LP_HW_API_status_t status = S2LP_HW_API_ERROR;
 #endif
     SIGFOX_UNUSED(signal);
     SIGFOX_UNUSED(s2lp_gpio);
@@ -127,7 +127,7 @@ S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_get_gpio(S2LP_HW_API_sign
 S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_get_tx_power(sfx_s8 expected_tx_power_dbm, sfx_s8 *s2lp_tx_power_dbm) {
     /* To be implemented by the device manufacturer */
 #ifdef SIGFOX_EP_ERROR_CODES
-    S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
+    S2LP_HW_API_status_t status = S2LP_HW_API_ERROR;
 #endif
     SIGFOX_UNUSED(expected_tx_power_dbm);
     SIGFOX_UNUSED(s2lp_tx_power_dbm);
@@ -139,7 +139,7 @@ S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_get_tx_power(sfx_s8 expec
 S2LP_HW_API_status_t __attribute__((weak)) S2LP_HW_API_get_latency(S2LP_HW_API_latency_t latency_type, sfx_u32 *latency_ms) {
     /* To be implemented by the device manufacturer */
 #ifdef SIGFOX_EP_ERROR_CODES
-    S2LP_HW_API_status_t status = S2LP_HW_API_SUCCESS;
+    S2LP_HW_API_status_t status = S2LP_HW_API_ERROR;
 #endif
     SIGFOX_UNUSED(latency_type);
     SIGFOX_UNUSED(latency_ms);
