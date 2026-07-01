@@ -11,6 +11,7 @@ The table below shows the versions compatibility between this radio example and 
 
 | **S2LP_RF_API** | **EP_LIB** |
 |:---:|:---:|
+| [v4.1](https://github.com/sigfox-tech-radio/sigfox-ep-rf-api-st-s2lp/releases/tag/v4.1) | >= [v4.0](https://github.com/sigfox-tech-radio/sigfox-ep-lib/releases/tag/v4.0) |
 | [v4.0](https://github.com/sigfox-tech-radio/sigfox-ep-rf-api-st-s2lp/releases/tag/v4.0) | >= [v4.0](https://github.com/sigfox-tech-radio/sigfox-ep-lib/releases/tag/v4.0) |
 | [v3.1](https://github.com/sigfox-tech-radio/sigfox-ep-rf-api-st-s2lp/releases/tag/v3.1) | [v3.6](https://github.com/sigfox-tech-radio/sigfox-ep-lib/releases/tag/v3.6) |
 | [v3.0](https://github.com/sigfox-tech-radio/sigfox-ep-rf-api-st-s2lp/releases/tag/v3.0) | [v3.5](https://github.com/sigfox-tech-radio/sigfox-ep-lib/releases/tag/v3.5) |
@@ -102,39 +103,7 @@ To perform the precompilation, you have to install `cmake` and `unifdef` tools, 
 cd sigfox-ep-rf-api-st-s2lp/
 mkdir build
 cd build/
-
-cmake -DSIGFOX_EP_LIB_DIR=<sigfox-ep-lib path> \
-      -DSIGFOX_EP_RC1_ZONE=ON \
-      -DSIGFOX_EP_RC2_ZONE=ON \
-      -DSIGFOX_EP_RC3_LBT_ZONE=ON \
-      -DSIGFOX_EP_RC3_LDC_ZONE=ON \
-      -DSIGFOX_EP_RC4_ZONE=ON \
-      -DSIGFOX_EP_RC5_ZONE=ON \
-      -DSIGFOX_EP_RC6_ZONE=ON \
-      -DSIGFOX_EP_RC7_ZONE=ON \
-      -DSIGFOX_EP_APPLICATION_MESSAGES=ON \
-      -DSIGFOX_EP_CONTROL_KEEP_ALIVE_MESSAGE=ON \
-      -DSIGFOX_EP_BIDIRECTIONAL=ON \
-      -DSIGFOX_EP_ASYNCHRONOUS=ON \
-      -DSIGFOX_EP_LOW_LEVEL_OPEN_CLOSE=ON \
-      -DSIGFOX_EP_REGULATORY=ON \
-      -DSIGFOX_EP_LATENCY_COMPENSATION=ON \
-      -DSIGFOX_EP_SINGLE_FRAME=ON \
-      -DSIGFOX_EP_UL_BIT_RATE_BPS=OFF \
-      -DSIGFOX_EP_TX_POWER_DBM_EIRP=OFF \
-      -DSIGFOX_EP_T_IFU_MS=OFF \
-      -DSIGFOX_EP_T_CONF_MS=OFF \
-      -DSIGFOX_EP_UL_PAYLOAD_SIZE=OFF \
-      -DSIGFOX_EP_AES_HW=ON \
-      -DSIGFOX_EP_CRC_HW=OFF \
-      -DSIGFOX_EP_MESSAGE_COUNTER_ROLLOVER=OFF \
-      -DSIGFOX_EP_PARAMETERS_CHECK=ON \
-      -DSIGFOX_EP_CERTIFICATION=ON \
-      -DSIGFOX_EP_PUBLIC_KEY_CAPABLE=ON \
-      -DSIGFOX_EP_VERBOSE=ON \
-      -DSIGFOX_EP_ERROR_CODES=ON \
-      -DSIGFOX_EP_ERROR_STACK=12 ..
-
+cmake -DSIGFOX_EP_LIB_DIR=<sigfox-ep-lib path> <sigfox-ep-lib flags> ..
 make precompil_s2lp_rf_api
 ```
 
@@ -154,39 +123,7 @@ To build a static library, you have to install `cmake` tool and run the followin
 cd sigfox-ep-rf-api-st-s2lp/
 mkdir build
 cd build/
-
-cmake -DSIGFOX_EP_LIB_DIR=<sigfox-ep-lib path> \
-      -DSIGFOX_EP_RC1_ZONE=ON \
-      -DSIGFOX_EP_RC2_ZONE=ON \
-      -DSIGFOX_EP_RC3_LBT_ZONE=ON \
-      -DSIGFOX_EP_RC3_LDC_ZONE=ON \
-      -DSIGFOX_EP_RC4_ZONE=ON \
-      -DSIGFOX_EP_RC5_ZONE=ON \
-      -DSIGFOX_EP_RC6_ZONE=ON \
-      -DSIGFOX_EP_RC7_ZONE=ON \
-      -DSIGFOX_EP_APPLICATION_MESSAGES=ON \
-      -DSIGFOX_EP_CONTROL_KEEP_ALIVE_MESSAGE=ON \
-      -DSIGFOX_EP_BIDIRECTIONAL=ON \
-      -DSIGFOX_EP_ASYNCHRONOUS=ON \
-      -DSIGFOX_EP_LOW_LEVEL_OPEN_CLOSE=ON \
-      -DSIGFOX_EP_REGULATORY=ON \
-      -DSIGFOX_EP_LATENCY_COMPENSATION=ON \
-      -DSIGFOX_EP_SINGLE_FRAME=ON \
-      -DSIGFOX_EP_UL_BIT_RATE_BPS=OFF \
-      -DSIGFOX_EP_TX_POWER_DBM_EIRP=OFF \
-      -DSIGFOX_EP_T_IFU_MS=OFF \
-      -DSIGFOX_EP_T_CONF_MS=OFF \
-      -DSIGFOX_EP_UL_PAYLOAD_SIZE=OFF \
-      -DSIGFOX_EP_AES_HW=ON \
-      -DSIGFOX_EP_CRC_HW=OFF \
-      -DSIGFOX_EP_MESSAGE_COUNTER_ROLLOVER=OFF \
-      -DSIGFOX_EP_PARAMETERS_CHECK=ON \
-      -DSIGFOX_EP_CERTIFICATION=ON \
-      -DSIGFOX_EP_PUBLIC_KEY_CAPABLE=ON \
-      -DSIGFOX_EP_VERBOSE=ON \
-      -DSIGFOX_EP_ERROR_CODES=ON \
-      -DSIGFOX_EP_ERROR_STACK=12 ..
-
+cmake -DSIGFOX_EP_LIB_DIR=<sigfox-ep-lib path> <sigfox-ep-lib flags> ..
 make s2lp_rf_api
 ```
 
