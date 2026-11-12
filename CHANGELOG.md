@@ -7,6 +7,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [v4.2](https://github.com/sigfox-tech-radio/sigfox-ep-rf-api-st-s2lp/releases/tag/v4.2) - 12 Nov 2026
+
+### Added
+
+* Add **version file**.
+
+### Changed
+
+* Changed from the Clear BSD License to the standard **BSD 3-Clause License**. See the `LICENSE` file for details.
+
+### Known limitations
+
+* **LBT** not implemented.
+* **Modulated CW** not supported for type approval addon.
+
 ## [v4.1](https://github.com/sigfox-tech-radio/sigfox-ep-rf-api-st-s2lp/releases/tag/v4.1) - 01 Jul 2026
 
 ### Fixed
